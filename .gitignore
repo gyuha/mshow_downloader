@@ -6,3 +6,4 @@ venv
 download
 연재
 완결
+*.pyc
