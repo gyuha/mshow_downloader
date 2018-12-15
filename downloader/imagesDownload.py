@@ -20,28 +20,18 @@ def pathName(path):
     path = path.strip()
     return path
 
-def imagesDownload(titlePath, chapter, images):
-    chapter = pathName(chapter)
-    path = os.path.join(titlePath, pathName(chapter))
-
-    zipFileName = path + ".zip"
-    if os.path.exists(zipFileName):
-        print("이미 압축함 : " + chapter)
-        return
-    print("Download : " + chapter)
-
-    pathlib.Path(path).mkdir(parents=True, exist_ok=True)
+def imagesDownload(savePath, images):
+    pathlib.Path(savePath).mkdir(parents=True, exist_ok=True)
     target = []
     i = 1
     for img in images:
-        print(img)
-        target.append([img, path, i])
+        target.append([img, savePath, i])
         i = i + 1
     pool = Pool(processes=4)
     pool.map(__downloadFromUrl, target)
 
-    __zipFolder(zipFileName, path)
-    shutil.rmtree(path, ignore_errors=True)
+    __zipFolder(savePath + ".zip", savePath)
+    shutil.rmtree(savePath, ignore_errors=True)
 
 
 def __zipFolder(filename, path):
