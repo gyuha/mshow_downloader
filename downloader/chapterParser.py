@@ -8,9 +8,9 @@ DOWNLOAD_FOLDER = "download"
 BASE_URL = 'https://mangashow.me/bbs/board.php?bo_table=msm_manga&wr_id='
 
 
-def saveFolderPath(titlePath, chapter):
+def saveFolderPath(titlePath, chapter, num):
     chapter = pathName(chapter)
-    path = os.path.join(titlePath, pathName(chapter))
+    path = os.path.join(titlePath, "%03d" % (num,) + "-" + pathName(chapter))
     return path
 
 # 만화책에서 이미지 목록을 가져 와서 다운로드 하기
@@ -18,9 +18,11 @@ def chapterImages(driver, title, data):
     titlePath = os.path.join(DOWNLOAD_FOLDER, pathName(title))
 
     pathlib.Path(titlePath).mkdir(parents=True, exist_ok=True)
+    num = 1
     for d in data:
         url = BASE_URL + d["wr_id"]
-        savePath = saveFolderPath(titlePath, d["title"])
+        savePath = saveFolderPath(titlePath, d["title"], num)
+        num = num + 1
         if os.path.exists(savePath + ".zip"):
             print("이미 압축한 파일 :" + d["title"])
             continue
