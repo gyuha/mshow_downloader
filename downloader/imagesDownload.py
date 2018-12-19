@@ -13,6 +13,7 @@ CUSTOM_USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 \
 (KHTML, like Gecko) Chrome/40.0.2214.91 Safari/537.36'
 
 logging.basicConfig(filename='./log.txt', level=logging.ERROR)
+logging.getLogger("requests").setLevel(logging.CRITICAL)
 
 def pathName(path):
     path = path.replace(':', '').replace('?', '').replace('/', '').replace('!', '').replace('\\', '')
@@ -50,9 +51,9 @@ def __downloadFromUrl(p):
     # print("Download : " + outputPath)
 
     try:
+        requests.urllib3.disable_warnings()
         s = requests.Session()
         s.headers.update({'User-Agent': CUSTOM_USER_AGENT})
-        requests.urllib3.disable_warnings()
         r = s.get(url, stream=True, verify=False)
         with open(outputPath, 'wb') as f:
             for chunk in r.iter_content(chunk_size=1024):
