@@ -28,18 +28,21 @@ def chapterImages(driver, title, data):
     for d in data:
         url = BASE_URL + d["wr_id"]
         if skip_num >= num:
-            print("패스 : [" + str(num) + "/" + str(len(data)) + "]" + d["title"] )
+            print("패스 : [" + str(num) + "/" + str(len(data)) + "] " + d["title"] )
             num = num + 1
             continue
         savePath = saveFolderPath(titlePath, d["title"], num)
-        print("다운로드 : [" + str(num) + "/" + str(len(data)) + "]" + d["title"])
+        print("다운로드 : [" + str(num) + "/" + str(len(data)) + "] " + d["title"])
         num = num + 1
         if os.path.exists(savePath + ".zip"):
             print("이미 압축한 파일 :" + d["title"])
             continue
+        print("Get image list by url..", end="\r")
         driver.get(url)
+        print("Download images..      ", end="\r")
         images = getImageList(driver.page_source)
         imagesDownload(savePath, images)
+        print("done.                  ", end="\r")
     # print(data)
     data = {'skip': num-1}
     saveJsonFile(os.path.join(titlePath, "data.json"), data)

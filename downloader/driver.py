@@ -6,6 +6,7 @@ def driver_init():
     print("[ ] Chrome Driver loading...", end="\r")
     chrome_options = Options()
     chrome_options.add_argument("--headless")
+    chrome_options.add_argument("log-level=1")
     chrome_options.add_argument("--window-size=%s" % "1920,1080")
     dirver_file = './chromedriver.exe'
     if platform.system() == 'Linux':
