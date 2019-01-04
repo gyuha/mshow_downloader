@@ -60,7 +60,7 @@ def getImageList(html):
         for i in reversed(range(6)):
             print("데이터 읽기 오류... %d초후 다시 시도 합니다."%(i+1), end="\r")
             time.sleep(1)
-        print("                                       ", end="\r")
+        print("                                                      ", end="\r")
         return []
 
     images = []
