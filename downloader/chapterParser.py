@@ -1,5 +1,6 @@
 import os
 import pathlib
+import time
 
 from bs4 import BeautifulSoup
 from downloader.imagesDownload import imagesDownload, pathName
@@ -39,8 +40,10 @@ def chapterImages(driver, title, data):
             continue
         print("Get image list by url..", end="\r")
         driver.get(url)
-        print("Download images..      ", end="\r")
-        images = getImageList(driver.page_source)
+        images = []
+        while len(images) == 0:
+            images = getImageList(driver.page_source)
+            print("Download images..      ", end="\r")
         imagesDownload(savePath, images)
         print("done.                  ", end="\r")
         # 최근 받은 파일을 JSON으로 저장하기
@@ -51,7 +54,15 @@ def chapterImages(driver, title, data):
 
 def getImageList(html):
     bs = BeautifulSoup(html, "html.parser")
-    contents = bs.find("div", {"class": "view-content"}).find_all("img")
+    try:
+        contents = bs.find("div", {"class": "view-content"}).find_all("img")
+    except:
+        for i in reversed(range(6)):
+            print("데이터 읽기 오류... %d초후 다시 시도 합니다."%(i+1), end="\r")
+            time.sleep(1)
+        print("                                       ", end="\r")
+        return []
+
     images = []
     for content in contents:
         images.append(content["src"])
