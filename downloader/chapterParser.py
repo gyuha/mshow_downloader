@@ -39,10 +39,10 @@ def chapterImages(driver, title, data):
             print("이미 압축한 파일 :" + d["title"])
             continue
         print("Get image list by url..", end="\r")
-        driver.get(url)
+
         images = []
         while len(images) == 0:
-            images = getImageList(driver.page_source)
+            images = getImageList(driver, url, driver.page_source)
             print("Download images..      ", end="\r")
         imagesDownload(savePath, images)
         print("done.                  ", end="\r")
@@ -52,7 +52,8 @@ def chapterImages(driver, title, data):
     print("[*] Download Complete")
 
 
-def getImageList(html):
+def getImageList(driver, url, html):
+    driver.get(url)
     bs = BeautifulSoup(html, "html.parser")
     try:
         contents = bs.find("div", {"class": "view-content"}).find_all("img")
