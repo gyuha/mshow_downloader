@@ -41,10 +41,9 @@ def chapterImages(driver, title, data):
             continue
         print("Get image list by url..", end="\r")
 
-        images = []
-        while len(images) == 0:
-            images = getImageList(driver, url )
-            print("Download images..      ", end="\r")
+        images = getImageList(driver, url )
+        print("Download images..      ", end="\r")
+
         imagesDownload(savePath, images)
         print("done.                  ", end="\r")
         # 최근 받은 파일을 JSON으로 저장하기
@@ -52,16 +51,27 @@ def chapterImages(driver, title, data):
         saveJsonFile(os.path.join(titlePath, "data.json"), json)
     print("[*] Download Complete")
 
+def parseImages(driver):
+    html = driver.page_source
+    bs = BeautifulSoup(html, "html.parser")
+    contents = []
+    try:
+        contents = bs.find("div", {"class": "view-content"}).find_all("img")
+    except Exception as e:
+        print(e)
+    return contents
+
+
 
 def getImageList(driver, url):
     driver.get(url)
-    html = driver.page_source
-    bs = BeautifulSoup(html, "html.parser")
-    try:
-        contents = bs.find("div", {"class": "view-content"}).find_all("img")
-    except:
+
+    contents = parseImages(driver)
+    if len(contents) == 0:
         retry_wait(7)
-        return []
+        contents = parseImages(driver)
+        if len(contents) == 0:
+            return getImageList(driver, url)
 
     images = []
     for content in contents:
