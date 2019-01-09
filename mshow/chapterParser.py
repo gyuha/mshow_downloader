@@ -5,6 +5,7 @@ import time
 from bs4 import BeautifulSoup
 from mshow.imagesDownload import imagesDownload, pathName
 from mshow.dataSave import saveJsonFile, loadJsonFile
+from mshow.driver import retry_wait
 
 DOWNLOAD_FOLDER = "download"
 BASE_URL = 'https://mangashow.me/bbs/board.php?bo_table=msm_manga&wr_id='
@@ -59,10 +60,7 @@ def getImageList(driver, url):
     try:
         contents = bs.find("div", {"class": "view-content"}).find_all("img")
     except:
-        for i in reversed(range(6)):
-            print("데이터 읽기 오류... %d초후 다시 시도 합니다."%(i+1), end="\r")
-            time.sleep(1)
-        print("                                                      ", end="\r")
+        retry_wait(7)
         return []
 
     images = []

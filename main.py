@@ -11,15 +11,14 @@ def usage():
     print("  -h, --help\t\tdisplay this help and exit")
     print("  -u, --update\t\tupdate downded comics")
     print("  -s, --size=SIZE\tupdate checked size(pages)")
+    print("  -d, --download=FILE\tdownload by title list file..")
     print("")
     print("If there is not any arguments, download by the comic title...")
 
 
-def downloadTitle(bookTitle):
-    driver = driver_init()
+def downloadTitle(driver, bookTitle):
     chaterList = chapterListParser(driver, bookTitle)
     chapterImages(driver, bookTitle, chaterList)
-    driver_close(driver)
 
 # 외부 파라미터 받기
 def arguments():
@@ -28,7 +27,7 @@ def arguments():
     downloadFile = ""
 
     try:
-        opts, _ = getopt.getopt(sys.argv[1:],"sd:uh",["help","update","size=", "download="])
+        opts, _ = getopt.getopt(sys.argv[1:],"s:d:uh",["help","update","size=", "download="])
     except getopt.GetoptError as err:
         print(str(err))
         print("")
@@ -42,21 +41,20 @@ def arguments():
         elif opt in ("-u", "--update"):
             isUpdate = True
         elif opt in ("-s", "--size"):
-            updateSize = arg
+            updateSize = int(arg)
         elif opt in ("-d", "--download"):
             downloadFile = arg
-
 
     return isUpdate, updateSize, downloadFile
 
 # 한번에 여러개 받기
-def multipleDownload(downList):
+def multipleDownload(driver, downList):
     num = 0
     for title in downList:
         num = num + 1
         print("############# DOWNLOAD [%d/%d] ###############"%(num, len(downList)))
         print(title)
-        downloadTitle(title)
+        downloadTitle(driver, title)
     print("Downloaded.....")
     num = 0
     for title in downList:
@@ -66,16 +64,21 @@ def multipleDownload(downList):
 if __name__ == '__main__':
     isUpdate, updateSize, downloadFile = arguments()
 
+    driver = driver_init()
+
     if isUpdate:
         # 업데이트 일 경우
-        updatedList = getUpdateList(updateSize)
-        multipleDownload(updatedList)
+        updatedList = getUpdateList(driver, updateSize)
+        multipleDownload(driver, updatedList)
     elif downloadFile != "":
+        # 파일에서 다운로드 목록 확인
         downList = downloadList(downloadFile)
-        multipleDownload(downList)
+        multipleDownload(driver, downList)
     else:
         # 그냥 하나씩 다운로드
         bookTitle = input("[*] Please input book title: ")
         bookTitle = bookTitle.strip()
 
-        downloadTitle(bookTitle)
+        downloadTitle(driver, bookTitle)
+    
+    driver_close(driver)

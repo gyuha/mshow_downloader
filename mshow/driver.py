@@ -1,4 +1,5 @@
 import platform
+import time
 from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
 
@@ -20,3 +21,9 @@ def driver_init():
 
 def driver_close(driver):
     driver.close()
+
+def retry_wait(second):
+    for i in reversed(range(second)):
+        print("데이터 읽기 오류... %d초후 다시 시도 합니다."%(i+1), end="\r")
+        time.sleep(1)
+        print("                                                      ", end="\r")
