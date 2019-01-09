@@ -3,8 +3,8 @@ import pathlib
 import time
 
 from bs4 import BeautifulSoup
-from downloader.imagesDownload import imagesDownload, pathName
-from downloader.dataSave import saveJsonFile, loadJsonFile
+from mshow.imagesDownload import imagesDownload, pathName
+from mshow.dataSave import saveJsonFile, loadJsonFile
 
 DOWNLOAD_FOLDER = "download"
 BASE_URL = 'https://mangashow.me/bbs/board.php?bo_table=msm_manga&wr_id='
@@ -42,7 +42,7 @@ def chapterImages(driver, title, data):
 
         images = []
         while len(images) == 0:
-            images = getImageList(driver, url, driver.page_source)
+            images = getImageList(driver, url )
             print("Download images..      ", end="\r")
         imagesDownload(savePath, images)
         print("done.                  ", end="\r")
@@ -52,8 +52,9 @@ def chapterImages(driver, title, data):
     print("[*] Download Complete")
 
 
-def getImageList(driver, url, html):
+def getImageList(driver, url):
     driver.get(url)
+    html = driver.page_source
     bs = BeautifulSoup(html, "html.parser")
     try:
         contents = bs.find("div", {"class": "view-content"}).find_all("img")
