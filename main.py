@@ -57,7 +57,7 @@ def multipleDownload(downList):
         print("############# DOWNLOAD [%d/%d] ###############"%(num, len(downList)))
         print(title)
         downloadTitle(title)
-    print("Updated.....")
+    print("Downloaded.....")
     num = 0
     for title in downList:
         num = num + 1
