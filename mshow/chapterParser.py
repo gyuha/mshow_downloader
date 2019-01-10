@@ -44,6 +44,9 @@ def chapterImages(driver, title, data):
         images = getImageList(driver, url )
         print("Download images..      ", end="\r")
 
+        if len(images) == 0:
+            print("이미지를 찾을 수 없습니다. 패스")
+            continue
         imagesDownload(savePath, images)
         print("done.                  ", end="\r")
         # 최근 받은 파일을 JSON으로 저장하기
@@ -54,24 +57,36 @@ def chapterImages(driver, title, data):
 def parseImages(driver):
     html = driver.page_source
     bs = BeautifulSoup(html, "html.parser")
+
+    # 아래 문장이 없으면 로딩이 되지 않은 것임.
+    if "뷰어로 보기" not in html:
+        return [], False
+
     contents = []
     try:
         contents = bs.find("div", {"class": "view-content"}).find_all("img")
     except Exception as e:
         print(e)
-    return contents
+    return contents, True
 
 
 
 def getImageList(driver, url):
     driver.get(url)
 
-    contents = parseImages(driver)
-    if len(contents) == 0:
+    contents, loading = parseImages(driver)
+   
+    # 로딩이 되지 않았으면... 다시 읽기
+    if loading == False:
         retry_wait(7, "[이미지목록] ")
-        contents = parseImages(driver)
-        if len(contents) == 0:
+        contents, loading = parseImages(driver)
+        # 시간이 지났는데도 로딩이 되지 않으면..
+        if loading == False:
             return getImageList(driver, url)
+
+    # 로딩이 되었지만, 데이터가 없으면 패스
+    if loading == True and len(contents) == 0:
+        return []
 
     images = []
     for content in contents:
