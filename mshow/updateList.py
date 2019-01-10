@@ -15,9 +15,10 @@ def existDownload(folerList, title):
     for downloaded in folerList:
         if downloaded in title:
             data = loadJsonFile(os.path.join("download", downloaded, "data.json"))
-            if data:
+            if not data:
+                return ""
+            if "title" in data:
                 return data["title"]
-            return ""
     return ""
 
 def parseList(folerList, driver):
@@ -38,12 +39,14 @@ def parseList(folerList, driver):
             if downloaded != "":
                 updateList.append(downloaded)
     except Exception as e: 
+        print(e)
         return updateList
     return updateList
 
 # 만화책에서 제목을 보고 업데이트 목록을 가져 옴
 def filterDownloadedList(folerList, driver, page):
     driver.get(LIST_URL%page)
+    print(LIST_URL%page)
 
     updateList = parseList(folerList, driver)
 
