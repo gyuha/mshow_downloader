@@ -48,7 +48,7 @@ def filterDownloadedList(folerList, driver, page):
     updateList = parseList(folerList, driver)
 
     if len(updateList) == 0:
-        retry_wait(7)
+        retry_wait(7, "[업데이트목록] ")
         updateList = parseList(folerList, driver)
         if len(updateList) == 0:
             return filterDownloadedList(folerList, driver, page)

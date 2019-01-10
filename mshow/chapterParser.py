@@ -68,7 +68,7 @@ def getImageList(driver, url):
 
     contents = parseImages(driver)
     if len(contents) == 0:
-        retry_wait(7)
+        retry_wait(7, "[이미지목록] ")
         contents = parseImages(driver)
         if len(contents) == 0:
             return getImageList(driver, url)

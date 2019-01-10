@@ -4,12 +4,10 @@ import os
 def downloadList(filename):
     print(filename)
     readList = []
-    with open(filename, "r", encoding="utf8") as readFile:
-        readList = readFile.readlines()
+    with open(filename, "r", encoding="utf-8-sig") as readFile:
+        for line in readFile:
+            line = line.strip()
+            if len(line) > 0:
+                readList.append(line)
     
-    downList = []
-    for l in readList:
-        l = l.strip()
-        if len(l) > 0:
-            downList.append(l)
-    return downList
+    return readList
