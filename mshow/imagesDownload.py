@@ -1,8 +1,10 @@
 from bs4 import BeautifulSoup
 from multiprocessing import Pool
 from os.path import basename
-import logging
+import tqdm
 import os
+import sys
+import time
 import pathlib
 import requests
 import shutil
@@ -11,9 +13,6 @@ import zipfile
 
 CUSTOM_USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 \
 (KHTML, like Gecko) Chrome/40.0.2214.91 Safari/537.36'
-
-logging.basicConfig(filename='./log.txt', level=logging.ERROR)
-logging.getLogger("requests").setLevel(logging.CRITICAL)
 
 def pathName(path):
     path = path.replace(':', '').replace('?', '').replace('/', '').replace('!', '').replace('\\', '')
@@ -28,8 +27,18 @@ def imagesDownload(savePath, images):
     for img in images:
         target.append([img, savePath, i])
         i = i + 1
+    
     pool = Pool(processes=4)
-    pool.map(__downloadFromUrl, target)
+    try:
+        for _ in tqdm.tqdm(pool.imap_unordered(__downloadFromUrl, target), 
+            total=len(target), ncols=80, desc="      └", leave=False):
+            pass
+        # pool.map(__downloadFromUrl, target)
+    finally:
+        pool.close()
+        pool.join()
+
+    print(" "*80, end="\r")
 
     __zipFolder(savePath + ".zip", savePath)
     shutil.rmtree(savePath, ignore_errors=True)
@@ -41,6 +50,7 @@ def __zipFolder(filename, path):
         zipf.write(os.path.join(path, f), basename(f))
     zipf.close()
 
+
 def __downloadFromUrl(p):
     url = p[0]
     outputPath = p[1]
@@ -48,7 +58,6 @@ def __downloadFromUrl(p):
 
     name = "%03d" % (num,) + ".jpg"
     outputPath = os.path.join(outputPath, name)
-    # print("Download : " + outputPath)
 
     try:
         requests.urllib3.disable_warnings()
@@ -60,3 +69,4 @@ def __downloadFromUrl(p):
                 f.write(chunk)
     except:
         return
+    

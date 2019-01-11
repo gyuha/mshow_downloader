@@ -32,6 +32,15 @@ $ pip install -r requirements.txt
 $ python main.py
 ```
 
+## Make Install file..
+```cmd
+auto-pi-to-exe
+```
+
+Or
+```cmd
+pyinstaller -y -F "main.py"
+```
 
 ## 참고
 
@@ -39,4 +48,4 @@ $ python main.py
 - [문과생도 할 수 있는 웹 크롤링 (2) - Selenium 사용 준비](http://sacko.tistory.com/13)
 - [문과생도 할 수 있는 웹 크롤링 (3) - Selenium 실습 기초](http://sacko.tistory.com/14)
 - [문과생도 할 수 있는 웹 크롤링 (4) - Selenium 제대로 사용하기](http://sacko.tistory.com/15)
-
+- [Auto Py To Exe](https://nitratine.net/blog/post/auto-py-to-exe/)

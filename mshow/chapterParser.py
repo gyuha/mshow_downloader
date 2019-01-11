@@ -37,22 +37,24 @@ def chapterImages(driver, title, data):
         print("[" + str(num) + "/" + str(len(data)) + "] 다운로드 : " + d["title"])
         num = num + 1
         if os.path.exists(savePath + ".zip"):
-            print("이미 압축한 파일 :" + d["title"])
+            print("  이미 압축한 파일 :" + d["title"])
             continue
-        print("Get image list by url..", end="\r")
+        print("  Get image list by url..", end="\r")
 
         images = getImageList(driver, url )
-        print("Download images..      ", end="\r")
+        print("  Download images..      ", end="\r")
 
         if len(images) == 0:
-            print("이미지를 찾을 수 없습니다. 패스")
+            print("  이미지를 찾을 수 없습니다. 패스")
             continue
         imagesDownload(savePath, images)
-        print("done.                  ", end="\r")
+
         # 최근 받은 파일을 JSON으로 저장하기
         json = {'skip': num-1, 'title': title}
         saveJsonFile(os.path.join(titlePath, "data.json"), json)
-    print("[*] Download Complete")
+    print("*"*40)
+    print("*         Download Complete            *")
+    print("*"*40)
 
 def parseImages(driver):
     html = driver.page_source

@@ -1,4 +1,5 @@
 import sys, getopt
+import multiprocessing
 
 from mshow.driver import driver_init, driver_close
 from mshow.chapters import chapterListParser
@@ -62,6 +63,8 @@ def multipleDownload(driver, downList):
         print("   %d. %s"%(num, title))
 
 if __name__ == '__main__':
+    multiprocessing.freeze_support()    #! 꼭 바로 다음줄에 넣어 줘야 한다.
+
     isUpdate, updateSize, downloadFile = arguments()
 
     driver = driver_init()
