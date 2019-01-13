@@ -30,10 +30,11 @@ def chapterImages(driver, title, data):
     for d in data:
         url = BASE_URL + d["wr_id"]
         if skip_num >= num:
-            print("[" + str(num) + "/" + str(len(data)) + "] 패스 : " + d["title"] )
+            print("[" + str(num) + "/" + str(len(data)) + "] 패스 : " + d["title"], end="\r")
             num = num + 1
             continue
         savePath = saveFolderPath(titlePath, d["title"], num)
+        print(" "*80, end="\r")
         print("[" + str(num) + "/" + str(len(data)) + "] 다운로드 : " + d["title"])
         num = num + 1
         if os.path.exists(savePath + ".zip"):

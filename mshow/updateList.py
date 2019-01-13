@@ -46,7 +46,6 @@ def parseList(folerList, driver):
 # 만화책에서 제목을 보고 업데이트 목록을 가져 옴
 def filterDownloadedList(folerList, driver, page):
     driver.get(LIST_URL%page)
-    print(LIST_URL%page)
 
     updateList = parseList(folerList, driver)
 
