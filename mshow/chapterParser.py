@@ -19,6 +19,15 @@ def saveFolderPath(titlePath, chapter, num):
 # 만화책에서 이미지 목록을 가져 와서 다운로드 하기
 def comicsDownload(driver, title, downloadFolder):
     chaterList, public_type, tags = chapterListParser(driver, title)
+
+    if len(chaterList) == 0:
+        print("[Error] 이미지를 찾을 수 없습니다. 타이틀을 확인 해 주세요.")
+        return
+
+    # 완결인 책자를 별도로 저장해 준다.
+    if public_type == "완결":
+        downloadFolder = os.path.join(downloadFolder, "[완결]")
+
     titlePath = os.path.join(downloadFolder, pathName(title))
 
     pathlib.Path(titlePath).mkdir(parents=True, exist_ok=True)

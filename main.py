@@ -22,7 +22,7 @@ def usage():
 
 # config 파일 읽기
 def readConfig(path):
-    if os.path.exists(path):
+    if not os.path.exists(path):
         return ""
 
     downloadPath = ""
@@ -37,15 +37,20 @@ def readConfig(path):
 def arguments():
     isUpdate = False
     updateSize = 3
+    downloadFile = ""
     global DOWNLOAD_FOLDER
 
     try:
-        opts, _ = getopt.getopt(sys.argv[1:],"s:d:uh",["help","update","size=", "download="])
+        opts, _ = getopt.getopt(sys.argv[1:],"c:s:d:uh",["help","update","config=","size=", "download="])
     except getopt.GetoptError as err:
         print(str(err))
         print("")
         usage()
         sys.exit(2)
+
+    defaultIni = "default.ini"
+    if os.path.exists(defaultIni):
+        DOWNLOAD_FOLDER = readConfig(defaultIni)
     
     for opt, arg in opts:
         if opt in ("-h", "--help"):
@@ -64,6 +69,7 @@ def arguments():
 
 # 한번에 여러개 받기
 def multipleDownload(driver, downList):
+    global DOWNLOAD_FOLDER
     num = 0
     for title in downList:
         num = num + 1

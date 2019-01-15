@@ -41,7 +41,11 @@
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/main.py",
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "args": [
+                "-c",
+                "default.ini"
+            ]
         },
         {
             "name": "Python: main [update]",
