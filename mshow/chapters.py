@@ -19,10 +19,34 @@ def parseChaterList(driver):
 
     return chapterList, True
 
+
+def publishType(bs):
+    publis_type = ""
+    try:
+         publis_type = bs.find("a", {"class": "publish_type"}).text.strip()
+    except Exception:
+        return ""
+    return publis_type
+
+def publishTags(bs):
+    tags = []
+    try:
+        aTags = bs.find_all("a", {"class": "tag"})
+    except Exception:
+        return []
+    
+    for tag in aTags:
+        t = tag.text.strip()
+        if len(t) > 0:
+            tags.append(t)
+    return tags
+
 # 만화의 챕터 목록 가져 오기
 def chapterListParser(driver, title):
     url = base_url + title
     driver.get(url)
+    publish_type = ""
+    tags = []
 
     chapterList = []
     valid = True
@@ -37,6 +61,11 @@ def chapterListParser(driver, title):
         print("잘 못 된 URL입니다.")
         return []
 
+    html = driver.page_source
+    bs = BeautifulSoup(html, "html.parser")
+    publish_type = publishType(bs)
+    tags = publishTags(bs)
+
     data = []
     for slot in reversed(chapterList):
         text = slot.find("div", {"class":"title"}).getText().strip()
@@ -45,4 +74,4 @@ def chapterListParser(driver, title):
             "wr_id": slot["data-wrid"]
         })
 
-    return data
+    return data, publish_type, tags
