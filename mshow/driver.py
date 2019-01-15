@@ -23,6 +23,11 @@ def driver_init():
 def driver_close(driver):
     driver.close()
 
+def reconnect(driver):
+    driver.close()
+    driver = driver_init()
+    return driver
+
 def retry_wait(second, msg = ""):
     for i in reversed(range(second)):
         print("%s데이터 읽기 오류... %d초후 다시 시도 합니다."%(msg, i+1), end="\r")

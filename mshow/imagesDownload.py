@@ -31,14 +31,14 @@ def imagesDownload(savePath, images):
     pool = Pool(processes=4)
     try:
         for _ in tqdm.tqdm(pool.imap_unordered(__downloadFromUrl, target), 
-            total=len(target), ncols=80, desc="    Download", leave=False):
+            total=len(target), ncols=68, desc="    Download", leave=False):
             pass
         # pool.map(__downloadFromUrl, target)
     finally:
         pool.close()
         pool.join()
 
-    print(" "*120, end="\r")
+    print(" "*80, end="\r")
 
     __zipFolder(savePath + ".zip", savePath)
     shutil.rmtree(savePath, ignore_errors=True)

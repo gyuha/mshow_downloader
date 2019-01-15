@@ -1,6 +1,6 @@
 import time
 from bs4 import BeautifulSoup
-from mshow.driver import retry_wait
+from mshow.driver import retry_wait, reconnect
 
 base_url = "https://mangashow.me/bbs/page.php?hid=manga_detail&manga_name="
 
@@ -41,12 +41,26 @@ def publishTags(bs):
             tags.append(t)
     return tags
 
+def publishAuthor(bs):
+    author = ""
+    try:
+         author = bs.find("a", {"class": "author"}).text.strip()
+    except Exception:
+        return ""
+    return author
+
 # 만화의 챕터 목록 가져 오기
 def chapterListParser(driver, title):
     url = base_url + title
-    driver.get(url)
     publish_type = ""
     tags = []
+    author = ""
+
+    try: 
+        driver.get(url)
+    except Exception:
+        reconnect(driver)
+        return chapterListParser(driver, title)
 
     chapterList = []
     valid = True
@@ -59,12 +73,13 @@ def chapterListParser(driver, title):
 
     if not valid:
         print("잘 못 된 URL입니다.")
-        return []
+        return [], publish_type, tags, author
 
     html = driver.page_source
     bs = BeautifulSoup(html, "html.parser")
     publish_type = publishType(bs)
     tags = publishTags(bs)
+    author = publishAuthor(bs)
 
     data = []
     for slot in reversed(chapterList):
@@ -74,4 +89,4 @@ def chapterListParser(driver, title):
             "wr_id": slot["data-wrid"]
         })
 
-    return data, publish_type, tags
+    return data, publish_type, tags, author

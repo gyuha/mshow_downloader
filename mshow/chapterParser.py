@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from mshow.chapters import chapterListParser
 from mshow.imagesDownload import imagesDownload, pathName
 from mshow.dataSave import saveJsonFile, loadJsonFile
-from mshow.driver import retry_wait
+from mshow.driver import retry_wait, reconnect
 
 BASE_URL = 'https://mangashow.me/bbs/board.php?bo_table=msm_manga&wr_id='
 
@@ -18,7 +18,7 @@ def saveFolderPath(titlePath, chapter, num):
 
 # 만화책에서 이미지 목록을 가져 와서 다운로드 하기
 def comicsDownload(driver, title, downloadFolder):
-    chaterList, public_type, tags = chapterListParser(driver, title)
+    chaterList, public_type, tags, author = chapterListParser(driver, title)
 
     if len(chaterList) == 0:
         print("[Error] 이미지를 찾을 수 없습니다. 타이틀을 확인 해 주세요.")
@@ -61,7 +61,13 @@ def comicsDownload(driver, title, downloadFolder):
         imagesDownload(savePath, images)
 
         # 최근 받은 파일을 JSON으로 저장하기
-        json = {'skip': num-1, 'title': title, 'public_type': public_type, 'tags': tags}
+        json = {
+            'author': author,
+            'skip': num-1, 
+            'title': title, 
+            'public_type': public_type, 
+            'tags': tags
+        }
         saveJsonFile(os.path.join(titlePath, "data.json"), json)
     print("[*] Download Complete")
 
@@ -83,7 +89,11 @@ def parseImages(driver):
 
 
 def getImageList(driver, url):
-    driver.get(url)
+    try: 
+        driver.get(url)
+    except Exception:
+        reconnect(driver)
+        return getImageList(driver, url)
 
     contents, loading = parseImages(driver)
    
