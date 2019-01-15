@@ -39,7 +39,7 @@ auto-pi-to-exe
 
 Or
 ```cmd
-pyinstaller -y -F "main.py"
+pyinstaller -y -F "mangashowme.py"
 ```
 
 ## 참고

@@ -10,3 +10,4 @@ download
 *.pyc
 log.txt
 download.txt
+default.ini

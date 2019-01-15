@@ -29,7 +29,7 @@
             "name": "Python: main [download by comic list]",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/main.py",
+            "program": "${workspaceFolder}/mangashowme.py",
             "console": "integratedTerminal",
             "args": [
                 "-d",
@@ -40,7 +40,7 @@
             "name": "Python: main [single download]",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/main.py",
+            "program": "${workspaceFolder}/mangashowme.py",
             "console": "integratedTerminal",
             "args": [
                 "-c",
@@ -51,7 +51,7 @@
             "name": "Python: main [update]",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/main.py",
+            "program": "${workspaceFolder}/mangashowme.py",
             "console": "integratedTerminal",
             "args": [
                 "-u",
