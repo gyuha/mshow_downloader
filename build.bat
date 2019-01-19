@@ -1,2 +1,3 @@
 pyinstaller -y -F "main.py"
-cp chromedriver.exe ./dist
+copy chromedriver.exe ./dist
+copy config.ini ./dist

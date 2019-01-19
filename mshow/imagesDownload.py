@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from multiprocessing import Pool
+from multiprocessing import Pool, cpu_count
 from os.path import basename
 import tqdm
 import os
@@ -28,7 +28,7 @@ def imagesDownload(savePath, images):
         target.append([img, savePath, i])
         i = i + 1
     
-    pool = Pool(processes=4)
+    pool = Pool(processes=cpu_count())
     try:
         for _ in tqdm.tqdm(pool.imap_unordered(__downloadFromUrl, target), 
             total=len(target), ncols=68, desc="    Download", leave=False):
