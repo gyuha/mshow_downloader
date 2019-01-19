@@ -48,7 +48,7 @@ def arguments():
         usage()
         sys.exit(2)
 
-    defaultIni = "default.ini"
+    defaultIni = "config.ini"
     if os.path.exists(defaultIni):
         DOWNLOAD_FOLDER = readConfig(defaultIni)
     

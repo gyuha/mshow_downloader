@@ -11,3 +11,4 @@ download
 log.txt
 download.txt
 default.ini
+*.spec

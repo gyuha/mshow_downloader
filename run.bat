@@ -1,3 +1,3 @@
 CALL .\venv\Scripts\activate.bat
-python main.py
+python mangashowme.py
 CALL .\venv\Scripts\deactivate.bat
