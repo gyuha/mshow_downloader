@@ -58,6 +58,17 @@
                 "-s",
                 "5"
             ]
+        },
+        {
+            "name": "Python: main [list]",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/mangashowme.py",
+            "console": "integratedTerminal",
+            "args": [
+                "-l",
+                "1"
+            ]
         }
     ]
 }

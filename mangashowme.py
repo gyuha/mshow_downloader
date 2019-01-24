@@ -7,6 +7,7 @@ from mshow.driver import driver_init, driver_close
 from mshow.chapterParser import comicsDownload
 from mshow.updateList import getUpdateList
 from mshow.downloadList import downloadList
+from mshow.comicsList import getComicsList
 
 DOWNLOAD_FOLDER = "download"
 
@@ -17,6 +18,7 @@ def usage():
     print("  -s, --size=SIZE\tupdate checked size(pages)")
     print("  -d, --download=FILE\tdownload by title list file..")
     print("  -c, --config=FILE\tselect config file..")
+    print("  -l, --list=SIZE\tget comics list..")
     print("")
     print("If there is not any arguments, download by the comic title...")
 
@@ -38,10 +40,11 @@ def arguments():
     isUpdate = False
     updateSize = 3
     downloadFile = ""
+    listSize = 0
     global DOWNLOAD_FOLDER
 
     try:
-        opts, _ = getopt.getopt(sys.argv[1:],"c:s:d:uh",["help","update","config=","size=", "download="])
+        opts, _ = getopt.getopt(sys.argv[1:],"c:s:d:l:uh",["help","update","config=","size=", "download=", "list="])
     except getopt.GetoptError as err:
         print(str(err))
         print("")
@@ -62,10 +65,12 @@ def arguments():
             updateSize = int(arg)
         elif opt in ("-d", "--download"):
             downloadFile = arg
+        elif opt in ("-l", "--list"):
+            listSize = arg
         elif opt in ("-c", "--config"):
             DOWNLOAD_FOLDER = readConfig(arg)
 
-    return isUpdate, updateSize, downloadFile
+    return isUpdate, updateSize, downloadFile, listSize
 
 # 한번에 여러개 받기
 def multipleDownload(driver, downList):
@@ -85,7 +90,11 @@ def multipleDownload(driver, downList):
 if __name__ == '__main__':
     multiprocessing.freeze_support()    #! 꼭 바로 다음줄에 넣어 줘야 한다.
 
-    isUpdate, updateSize, downloadFile = arguments()
+    isUpdate, updateSize, downloadFile, listSize = arguments()
+
+    if int(listSize) > 0:
+        getComicsList(int(listSize))
+        exit(1)
 
     driver = driver_init()
 
