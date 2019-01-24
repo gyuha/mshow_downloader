@@ -11,6 +11,13 @@ def parse(text):
     for t in titles:
         title = t.find("div", {"class": "manga-subject"}).find("a").getText().strip()
 
+        img = ""
+        imgDiv = t.find("div", {"class": "img-wrap-back"})
+        if imgDiv is not None:
+            img = imgDiv.attrs["style"]
+            img = img.replace("background-image:url(", "")
+            img = img[:-1]
+
         authDiv = t.find("div", {"class": "author"})
         auth = ""
         if authDiv is not None:
@@ -26,7 +33,7 @@ def parse(text):
         if tagsDiv is not None:
             tags = tagsDiv.getText().strip()
 
-        contents = contents + "%s\t%s\t%s\t%s\n"%(title, auth, tags, category)
+        contents = contents + "%s\t%s\t%s\t%s\t%s\n"%(title, auth, tags, category, img)
     return contents
 
 
@@ -36,8 +43,8 @@ def getComicsList(pages):
         os.remove(FILE_NAME)
 
     with open(FILE_NAME, "a", encoding="utf8") as out:
-            out.write("%s\t%s\t%s\t%s\n" %
-                      ("제목", "작가", "태그", "분류"))
+            out.write("%s\t%s\t%s\t%s\t%s\n" %
+                      ("제목", "작가", "태그", "분류", "이미지"))
 
     for page in range(pages):
         print(LIST_PAGE%page, end="\r")
