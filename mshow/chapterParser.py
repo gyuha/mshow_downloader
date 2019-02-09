@@ -1,7 +1,8 @@
 import os
 import pathlib
 import time
-
+import re
+import json
 from bs4 import BeautifulSoup
 from mshow.chapters import chapterListParser
 from mshow.imagesDownload import imagesDownload, pathName
@@ -17,6 +18,8 @@ def saveFolderPath(titlePath, chapter, num):
     return path
 
 # 만화책에서 이미지 목록을 가져 와서 다운로드 하기
+
+
 def comicsDownload(driver, title, downloadFolder):
     chaterList, public_type, tags, author = chapterListParser(driver, title)
 
@@ -35,12 +38,13 @@ def comicsDownload(driver, title, downloadFolder):
     saveData = loadJsonFile(os.path.join(titlePath, "data.json"))
     if saveData:
         skip_num = int(saveData["skip"])
-    
+
     num = 1
     for d in chaterList:
         url = BASE_URL + d["wr_id"]
         if skip_num >= num:
-            print("[" + str(num) + "/" + str(len(chaterList)) + "] 패스 : " + d["title"], end="\r")
+            print("[" + str(num) + "/" + str(len(chaterList)) +
+                  "] 패스 : " + d["title"], end="\r")
             num = num + 1
             continue
         savePath = saveFolderPath(titlePath, d["title"], num)
@@ -52,7 +56,7 @@ def comicsDownload(driver, title, downloadFolder):
             continue
         print("  Get image list by url..", end="\r")
 
-        images = getImageList(driver, url )
+        images = getImageList(driver, url)
         print("  Download images..      ", end="\r")
 
         if len(images) == 0:
@@ -63,40 +67,48 @@ def comicsDownload(driver, title, downloadFolder):
         # 최근 받은 파일을 JSON으로 저장하기
         json = {
             'author': author,
-            'skip': num-1, 
-            'title': title, 
-            'public_type': public_type, 
+            'skip': num-1,
+            'title': title,
+            'public_type': public_type,
             'tags': tags
         }
         saveJsonFile(os.path.join(titlePath, "data.json"), json)
     print("[*] Download Complete")
 
+
 def parseImages(driver):
     html = driver.page_source
-    bs = BeautifulSoup(html, "html.parser")
 
     # 아래 문장이 없으면 로딩이 되지 않은 것임.
     if "뷰어로 보기" not in html:
         return [], False
 
-    contents = []
-    try:
-        contents = bs.find("div", {"class": "view-content"}).find_all("img")
-    except Exception as e:
-        print(e)
-    return contents, True
-
+    p = re.compile(r'var\s+img_list\s+=\s+(.*);')
+    m = p.search(html)
+    if m == None:
+        return [], False
+    strData = m.group(0)
+    strData = re.sub(r'var\s+img_list\s+=\s+', '{"image_list":', strData)
+    strData = re.sub(r';$', '}', strData)
+    image_urls = json.loads(strData)
+    # print(image_urls)
+    # contents = []
+    # try:
+    #     contents = bs.find("div", {"class": "view-content"}).find_all("img")
+    # except Exception as e:
+    #     print(e)``
+    return image_urls['image_list'], True
 
 
 def getImageList(driver, url):
-    try: 
+    try:
         driver.get(url)
     except Exception:
         reconnect(driver)
         return getImageList(driver, url)
 
     contents, loading = parseImages(driver)
-   
+
     # 로딩이 되지 않았으면... 다시 읽기
     if loading == False:
         retry_wait(7, "[이미지목록] ")
@@ -109,7 +121,4 @@ def getImageList(driver, url):
     if loading == True and len(contents) == 0:
         return []
 
-    images = []
-    for content in contents:
-        images.append(content["src"])
-    return images
+    return contents
