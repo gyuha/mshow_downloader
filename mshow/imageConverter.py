@@ -22,6 +22,7 @@ def vertor(chapter):
 
     return mSin + mCos + mTan
 
+# 책의 이미지를 섞어 둔걸 원복 하는 코드
 def convert(image_path, chapter, seed):
     global _seed, _CX, _CY
     _seed = math.floor(seed/10)
