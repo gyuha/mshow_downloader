@@ -7,7 +7,7 @@ from mshow.driver import driver_init, driver_close
 from mshow.dataSave import loadJsonFile
 from mshow.driver import retry_wait
 
-LIST_URL = "https://mangashow.me/bbs/board.php?bo_table=msm_manga&page=%d"
+LIST_URL = "https://mangashow2.me/bbs/board.php?bo_table=msm_manga&page=%d"
 
 # 다운받은적 있는지 무식하게 찾는다
 def existDownload(folerList, title):

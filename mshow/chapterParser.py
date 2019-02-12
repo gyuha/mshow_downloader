@@ -9,7 +9,7 @@ from mshow.imagesDownload import imagesDownload, pathName
 from mshow.dataSave import saveJsonFile, loadJsonFile
 from mshow.driver import retry_wait, reconnect
 
-BASE_URL = 'https://mangashow.me/bbs/board.php?bo_table=msm_manga&wr_id='
+BASE_URL = 'https://mangashow2.me/bbs/board.php?bo_table=msm_manga&wr_id='
 
 
 def saveFolderPath(titlePath, chapter, num):

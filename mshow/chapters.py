@@ -2,7 +2,7 @@ import time
 from bs4 import BeautifulSoup
 from mshow.driver import retry_wait, reconnect
 
-base_url = "https://mangashow.me/bbs/page.php?hid=manga_detail&manga_name="
+base_url = "https://mangashow2.me/bbs/page.php?hid=manga_detail&manga_name="
 
 def parseChaterList(driver):
     html = driver.page_source
