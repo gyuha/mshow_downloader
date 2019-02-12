@@ -17,6 +17,7 @@ CUSTOM_USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 \
 def pathName(path):
     path = path.replace(':', '').replace('?', '').replace('/', '').replace('!', '').replace('\\', '')
     path = path.replace("「", " ").replace("」", '').replace(".", "").replace('\t', '')
+    path = path.replace("<", "").replace(">", "")
     path = path.strip()
     return path
 
