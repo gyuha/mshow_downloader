@@ -11,6 +11,8 @@ def parse(text):
     contents = ""
     for t in titles:
         title = t.find("div", {"class": "manga-subject"}).find("a").getText().strip()
+        if len(title) == 0:
+            continue;
         link = ""
         linkA = t.find("a", {"class": "ellipsis"})
         if linkA is not None:

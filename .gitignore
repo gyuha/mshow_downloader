@@ -14,5 +14,6 @@ default.ini
 *.spec
 list.txt
 comics.txt
+*.html
 
 \[완결\]

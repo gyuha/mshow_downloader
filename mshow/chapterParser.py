@@ -56,7 +56,7 @@ def comicsDownload(driver, title, downloadFolder):
             continue
         print("  Get image list by url..", end="\r")
 
-        images = getImageList(driver, url)
+        images, chapter, seed = getImageList(driver, url)
         print("  Download images..      ", end="\r")
 
         if len(images) == 0:
@@ -79,25 +79,31 @@ def comicsDownload(driver, title, downloadFolder):
 def parseImages(driver):
     html = driver.page_source
 
+    chapter = 0
+    seed = 0
+
     # 아래 문장이 없으면 로딩이 되지 않은 것임.
     if "뷰어로 보기" not in html:
-        return [], False
+        return [], chapter, seed, False
 
-    p = re.compile(r'var\s+img_list\s+=\s+(.*);')
-    m = p.search(html)
-    if m == None:
-        return [], False
-    strData = m.group(0)
-    strData = re.sub(r'var\s+img_list\s+=\s+', '{"image_list":', strData)
-    strData = re.sub(r';$', '}', strData)
+    strData = re.search(r'var\s+img_list\s+=\s+(.*);', html).group(1)
+    if not strData:
+        return [], chapter, seed, False
     image_urls = json.loads(strData)
+
+    if len(image_urls) == 0:
+        return [], chapter, seed, False
+    
+    chapter = int(re.search(r'var\s+chapter\s+=\s+(.*);', html).group(1))
+    seed = int(re.search(r'var\s+view_cnt\s+=\s+(.*);', html).group(1))
+    
     # print(image_urls)
     # contents = []
     # try:
     #     contents = bs.find("div", {"class": "view-content"}).find_all("img")
     # except Exception as e:
     #     print(e)``
-    return image_urls['image_list'], True
+    return image_urls, chapter, seed, True
 
 
 def getImageList(driver, url):
@@ -107,12 +113,12 @@ def getImageList(driver, url):
         reconnect(driver)
         return getImageList(driver, url)
 
-    contents, loading = parseImages(driver)
+    contents, chapter, seed, loading = parseImages(driver)
 
     # 로딩이 되지 않았으면... 다시 읽기
     if loading == False:
         retry_wait(7, "[이미지목록] ")
-        contents, loading = parseImages(driver)
+        contents, chapter, seed, loading = parseImages(driver)
         # 시간이 지났는데도 로딩이 되지 않으면..
         if loading == False:
             return getImageList(driver, url)
@@ -121,4 +127,4 @@ def getImageList(driver, url):
     if loading == True and len(contents) == 0:
         return []
 
-    return contents
+    return contents, chapter, seed
