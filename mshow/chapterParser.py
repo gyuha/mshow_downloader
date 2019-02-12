@@ -62,7 +62,7 @@ def comicsDownload(driver, title, downloadFolder):
         if len(images) == 0:
             print("  이미지를 찾을 수 없습니다. 패스")
             continue
-        imagesDownload(savePath, images)
+        imagesDownload(savePath, images, chapter, seed)
 
         # 최근 받은 파일을 JSON으로 저장하기
         json = {

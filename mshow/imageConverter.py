@@ -1,4 +1,5 @@
 import math
+import os
 from PIL import Image as PILImage
 
 _seed = 1
@@ -48,6 +49,11 @@ def convert(image_path, chapter, seed):
     except Exception as e:
         print(e)
         return
+
+def convertImages(savePath, chapter, seed):
+    for f in os.listdir(savePath):
+        fname = os.path.join(savePath, f)
+        convert(fname, chapter, seed)
 
 if __name__ == "__main__":
     convert("test.jpg", 554724, 24520)

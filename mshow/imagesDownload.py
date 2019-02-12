@@ -9,7 +9,7 @@ import pathlib
 import requests
 import shutil
 import zipfile
-
+from mshow.imageConverter import convertImages
 
 CUSTOM_USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 \
 (KHTML, like Gecko) Chrome/40.0.2214.91 Safari/537.36'
@@ -20,7 +20,7 @@ def pathName(path):
     path = path.strip()
     return path
 
-def imagesDownload(savePath, images):
+def imagesDownload(savePath, images, chapter, seed):
     pathlib.Path(savePath).mkdir(parents=True, exist_ok=True)
     target = []
     i = 1
@@ -39,6 +39,8 @@ def imagesDownload(savePath, images):
         pool.join()
 
     print(" "*80, end="\r")
+    if seed > 0:
+        convertImages(savePath, chapter, seed)
 
     __zipFolder(savePath + ".zip", savePath)
     shutil.rmtree(savePath, ignore_errors=True)
