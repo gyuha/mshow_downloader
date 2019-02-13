@@ -18,7 +18,8 @@ def parse(text):
         link = ""
         linkA = t.find("a", {"class": "ellipsis"})
         if linkA is not None:
-            link = "\"%s/bbs/page.php?hid=manga_detail&manga_name=" + quote(title) + "\""%(DOMAIN)
+            c = Config()
+            link = "\"%s/bbs/page.php?hid=manga_detail&manga_name=" + quote(title) + "\""%(c.getDomain())
         img = ""
         imgDiv = t.find("div", {"class": "img-wrap-back"})
         if imgDiv is not None:
