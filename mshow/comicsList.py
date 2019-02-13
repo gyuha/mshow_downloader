@@ -1,9 +1,11 @@
 import os
 import requests
+
 from bs4 import BeautifulSoup
 from urllib.parse import quote
+from mshow.config import Config
 
-LIST_PAGE = "https://mangashow2.me/bbs/page.php?hid=manga_list&page=%d"
+LIST_PAGE = "%s/bbs/page.php?hid=manga_list&page=%d"
 FILE_NAME = "comics.txt"
 def parse(text):
     bs = BeautifulSoup(text, "html.parser")
@@ -12,11 +14,11 @@ def parse(text):
     for t in titles:
         title = t.find("div", {"class": "manga-subject"}).find("a").getText().strip()
         if len(title) == 0:
-            continue;
+            continue
         link = ""
         linkA = t.find("a", {"class": "ellipsis"})
         if linkA is not None:
-            link = "\"https://mangashow2.me/bbs/page.php?hid=manga_detail&manga_name=" + quote(title) + "\""
+            link = "\"%s/bbs/page.php?hid=manga_detail&manga_name=" + quote(title) + "\""%(DOMAIN)
         img = ""
         imgDiv = t.find("div", {"class": "img-wrap-back"})
         if imgDiv is not None:
@@ -53,8 +55,10 @@ def getComicsList(pages):
                       ("제목", "작가", "태그", "분류", "링크","이미지"))
 
     for page in range(pages):
-        print(LIST_PAGE%page, end="\r")
-        r = requests.get(LIST_PAGE%page)
+        c = Config()
+        url = LIST_PAGE%(c.getDomain(), page)
+        print(url, end="\r")
+        r = requests.get(url)
         content = parse(r.text)
         with open(FILE_NAME, "a", encoding="utf8") as out:
             out.write(content)

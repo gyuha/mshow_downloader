@@ -1,13 +1,13 @@
-import os
 from bs4 import BeautifulSoup
 from collections import OrderedDict
-
-from mshow.imagesDownload import pathName
-from mshow.driver import driver_init, driver_close
+from mshow.config import Config
 from mshow.dataSave import loadJsonFile
+from mshow.driver import driver_init, driver_close
 from mshow.driver import retry_wait
+from mshow.imagesDownload import pathName
+import os
 
-LIST_URL = "https://mangashow2.me/bbs/board.php?bo_table=msm_manga&page=%d"
+LIST_URL = "%s/bbs/board.php?bo_table=msm_manga&page=%d"
 
 # 다운받은적 있는지 무식하게 찾는다
 def existDownload(folerList, title):
@@ -45,7 +45,8 @@ def parseList(folerList, driver):
 
 # 만화책에서 제목을 보고 업데이트 목록을 가져 옴
 def filterDownloadedList(folerList, driver, page):
-    driver.get(LIST_URL%page)
+    c = Config()
+    driver.get(LIST_URL%(c.getDomain(), page))
 
     updateList = parseList(folerList, driver)
 

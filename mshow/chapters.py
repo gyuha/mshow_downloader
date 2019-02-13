@@ -1,8 +1,10 @@
 import time
+from mshow.config import Config
 from bs4 import BeautifulSoup
+
 from mshow.driver import retry_wait, reconnect
 
-base_url = "https://mangashow2.me/bbs/page.php?hid=manga_detail&manga_name="
+base_url = "/bbs/page.php?hid=manga_detail&manga_name="
 
 def parseChaterList(driver):
     html = driver.page_source
@@ -51,7 +53,8 @@ def publishAuthor(bs):
 
 # 만화의 챕터 목록 가져 오기
 def chapterListParser(driver, title):
-    url = base_url + title
+    c = Config()
+    url = c.getDomain() + base_url + title
     publish_type = ""
     tags = []
     author = ""

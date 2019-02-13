@@ -1,15 +1,14 @@
 import sys, getopt
 import multiprocessing
-import configparser
+
 import os
 
+from mshow.config import Config, DOWNLOAD_PATH
 from mshow.driver import driver_init, driver_close
 from mshow.chapterParser import comicsDownload
 from mshow.updateList import getUpdateList
 from mshow.downloadList import downloadList
 from mshow.comicsList import getComicsList
-
-DOWNLOAD_FOLDER = "download"
 
 def usage():
     print("python %s -u -s <PageSize>"%sys.argv[0])
@@ -22,17 +21,6 @@ def usage():
     print("")
     print("If there is not any arguments, download by the comic title...")
 
-# config 파일 읽기
-def readConfig(path):
-    if not os.path.exists(path):
-        return ""
-
-    downloadPath = ""
-    config = configparser.ConfigParser()
-    config.read(path)
-    downloadPath = config["DEFAULT"]["path"]
-
-    return downloadPath
 
 
 # 외부 파라미터 받기
@@ -41,7 +29,6 @@ def arguments():
     updateSize = 3
     downloadFile = ""
     listSize = 0
-    global DOWNLOAD_FOLDER
 
     try:
         opts, _ = getopt.getopt(sys.argv[1:],"c:s:d:l:uh",["help","update","config=","size=", "download=", "list="])
@@ -53,7 +40,9 @@ def arguments():
 
     defaultIni = "config.ini"
     if os.path.exists(defaultIni):
-        DOWNLOAD_FOLDER = readConfig(defaultIni)
+        config = Config()
+        config.loadConfig(defaultIni)
+
     
     for opt, arg in opts:
         if opt in ("-h", "--help"):
@@ -68,19 +57,20 @@ def arguments():
         elif opt in ("-l", "--list"):
             listSize = arg
         elif opt in ("-c", "--config"):
-            DOWNLOAD_FOLDER = readConfig(arg)
+            config = Config()
+            config.loadConfig(arg)
 
     return isUpdate, updateSize, downloadFile, listSize
 
 # 한번에 여러개 받기
 def multipleDownload(driver, downList):
-    global DOWNLOAD_FOLDER
     num = 0
     for title in downList:
         num = num + 1
         print("############# DOWNLOAD [%d/%d] ###############"%(num, len(downList)))
         print(title)
-        comicsDownload(driver, title, DOWNLOAD_FOLDER)
+        config = Config()
+        comicsDownload(driver, title, config.getDownloadPath())
     print("Downloaded.....")
     num = 0
     for title in downList:
@@ -96,21 +86,24 @@ if __name__ == '__main__':
         getComicsList(int(listSize))
         exit(1)
 
-    driver = driver_init()
+    driver = None
 
     if isUpdate:
         # 업데이트 일 경우
+        driver = driver_init()
         updatedList = getUpdateList(driver, updateSize)
         multipleDownload(driver, updatedList)
     elif downloadFile != "":
         # 파일에서 다운로드 목록 확인
+        driver = driver_init()
         downList = downloadList(downloadFile)
         multipleDownload(driver, downList)
     else:
         # 그냥 하나씩 다운로드
         bookTitle = input("[*] Please input book title: ")
         bookTitle = bookTitle.strip()
-
-        comicsDownload(driver, bookTitle, DOWNLOAD_FOLDER)
+        driver = driver_init()
+        config = Config()
+        comicsDownload(driver, bookTitle, config.getDownloadPath())
     
     driver_close(driver)

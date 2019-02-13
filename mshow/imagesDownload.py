@@ -1,22 +1,24 @@
 from bs4 import BeautifulSoup
+from mshow.imageConverter import convertImages
 from multiprocessing import Pool, cpu_count
 from os.path import basename
-import tqdm
 import os
-import sys
-import time
 import pathlib
+import re
 import requests
 import shutil
+import sys
+import time
+import tqdm
 import zipfile
-from mshow.imageConverter import convertImages
 
 CUSTOM_USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 \
 (KHTML, like Gecko) Chrome/40.0.2214.91 Safari/537.36'
 
 def pathName(path):
+    path = re.sub(r"NEW\t+", '', path)
     path = path.replace(':', '').replace('?', '').replace('/', '').replace('!', '').replace('\\', '')
-    path = path.replace("「", " ").replace("」", '').replace(".", "").replace('\t', '')
+    path = path.replace("「", " ").replace("」", '').replace(".", "").replace('\t', ' ')
     path = path.replace("<", "").replace(">", "")
     path = path.strip()
     return path

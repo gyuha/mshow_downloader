@@ -1,15 +1,16 @@
-import os
-import pathlib
-import time
-import re
-import json
 from bs4 import BeautifulSoup
 from mshow.chapters import chapterListParser
-from mshow.imagesDownload import imagesDownload, pathName
+from mshow.config import Config
 from mshow.dataSave import saveJsonFile, loadJsonFile
 from mshow.driver import retry_wait, reconnect
+from mshow.imagesDownload import imagesDownload, pathName
+import json
+import os
+import pathlib
+import re
+import time
 
-BASE_URL = 'https://mangashow2.me/bbs/board.php?bo_table=msm_manga&wr_id='
+BASE_URL = '/bbs/board.php?bo_table=msm_manga&wr_id='
 
 
 def saveFolderPath(titlePath, chapter, num):
@@ -17,9 +18,8 @@ def saveFolderPath(titlePath, chapter, num):
     path = os.path.join(titlePath, "%03d" % (num,) + "-" + pathName(chapter))
     return path
 
+
 # 만화책에서 이미지 목록을 가져 와서 다운로드 하기
-
-
 def comicsDownload(driver, title, downloadFolder):
     chaterList, public_type, tags, author = chapterListParser(driver, title)
 
@@ -41,7 +41,8 @@ def comicsDownload(driver, title, downloadFolder):
 
     num = 1
     for d in chaterList:
-        url = BASE_URL + d["wr_id"]
+        c = Config()
+        url = c.getDomain() + BASE_URL + d["wr_id"]
         if skip_num >= num:
             print("[" + str(num) + "/" + str(len(chaterList)) +
                   "] 패스 : " + d["title"], end="\r")
