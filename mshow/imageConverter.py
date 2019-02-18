@@ -6,10 +6,11 @@ _seed = 1
 _CX = 5
 _CY = 5
 
-def vertor(chapter):
+def __vertor(chapter):
     global _seed
     if chapter < 554714:
         e = 10000 * math.sin(_seed)
+        _seed = _seed + 1
         return math.floor(100000 * (e - math.floor(e)))
 
     _seed = _seed + 1
@@ -23,13 +24,13 @@ def vertor(chapter):
     return mSin + mCos + mTan
 
 # 책의 이미지를 섞어 둔걸 원복 하는 코드
-def convert(image_path, chapter, seed):
+def __convert(image_path, chapter, seed):
     global _seed, _CX, _CY
     _seed = math.floor(seed/10)
     order = []
     
     for i in range(_CX * _CY):
-        order.append([i, vertor(chapter)])
+        order.append([i, __vertor(chapter)])
     order = sorted(order, key=lambda x: x[1])
     try:
         source = PILImage.open(image_path)
@@ -54,7 +55,7 @@ def convert(image_path, chapter, seed):
 def convertImages(savePath, chapter, seed):
     for f in os.listdir(savePath):
         fname = os.path.join(savePath, f)
-        convert(fname, chapter, seed)
+        __convert(fname, chapter, seed)
 
 if __name__ == "__main__":
-    convert("test.jpg", 554724, 24520)
+    __convert("test.jpg", 554724, 24520)
