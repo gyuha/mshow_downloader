@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 from mshow.imageConverter import convertImages
 from multiprocessing import Pool, cpu_count
 from os.path import basename
+from mshow.config import Config
 import os
 import pathlib
 import re
@@ -27,7 +28,10 @@ def imagesDownload(savePath, images, chapter, seed):
     pathlib.Path(savePath).mkdir(parents=True, exist_ok=True)
     target = []
     i = 1
+    c = Config()
+
     for img in images:
+        img = re.sub(r"mangashow\d.me", c.getName(), img)
         target.append([img, savePath, i])
         i = i + 1
     
