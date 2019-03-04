@@ -53,6 +53,15 @@ def __convert(image_path, chapter, seed):
         return
 
 def convertImages(savePath, chapter, seed):
+    global _CX, _CY
+    if seed / 10 > 30000:
+        _CX = 1
+        _CY = 6
+    elif seed / 10 > 20000:
+        _CX = 1
+    elif seed / 10 > 10000:
+        _CY = 1
+
     for f in os.listdir(savePath):
         fname = os.path.join(savePath, f)
         __convert(fname, chapter, seed)
