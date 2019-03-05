@@ -66,8 +66,8 @@
             "program": "${workspaceFolder}/mangashowme.py",
             "console": "integratedTerminal",
             "args": [
-                "-l",
-                "1"
+                "-d",
+                "list.txt"
             ]
         }
     ]

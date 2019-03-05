@@ -26,9 +26,6 @@ pycodestyle==2.4.0
 pycparser==2.19
 PyInstaller==3.4
 pylint==2.1.1
-PyQt5==5.11.3
-PyQt5-sip==4.19.13
-pyqt5-tools==5.11.3.1.4
 python-dotenv==0.10.1
 pywin32-ctypes==0.2.0
 requests==2.21.0

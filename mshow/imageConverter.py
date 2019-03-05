@@ -61,6 +61,9 @@ def convertImages(savePath, chapter, seed):
         _CX = 1
     elif seed / 10 > 10000:
         _CY = 1
+    else:
+        _CX = 5
+        _CY = 5
 
     for f in os.listdir(savePath):
         fname = os.path.join(savePath, f)
