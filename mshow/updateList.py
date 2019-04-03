@@ -5,9 +5,11 @@ from mshow.dataSave import loadJsonFile
 from mshow.driver import driver_init, driver_close
 from mshow.driver import retry_wait
 from mshow.imagesDownload import pathName
+import urllib.parse
 import os
+import re
 
-LIST_URL = "%s/bbs/board.php?bo_table=msm_manga&page=%d"
+LIST_URL = "%s/bbs/board.php?bo_table=manga&page=%d"
 
 # 다운받은적 있는지 무식하게 찾는다
 def existDownload(folerList, title):
@@ -27,14 +29,15 @@ def parseList(folerList, driver):
         html = driver.page_source
         bs = BeautifulSoup(html, "html.parser")
 
-        subjects = bs.find("div", {"class", "list-container"}).find_all("div", {"class", "subject"})
+        subjects = bs.find("div", {"class", "list-container"}).find_all("div", {"class", "post-info"})
         for subject in subjects:
-            if subject.text.strip() == "":
+            title = subject.find("a")['href']
+            title = urllib.parse.unquote(title)
+            title = re.sub(r"^.*manga_name=", "", title)
+            title = title.replace("+", " ")
+            # print(title)
+            if title == "":
                 continue
-            lines = subject.text.splitlines()
-            if len(lines) < 1:
-                continue
-            title = lines[1].strip()
             downloaded = existDownload(folerList, title)
             if downloaded != "":
                 updateList.append(downloaded)
@@ -46,15 +49,16 @@ def parseList(folerList, driver):
 # 만화책에서 제목을 보고 업데이트 목록을 가져 옴
 def filterDownloadedList(folerList, driver, page):
     c = Config()
+    # print(LIST_URL%(c.getDomain(), page))
     driver.get(LIST_URL%(c.getDomain(), page))
 
     updateList = parseList(folerList, driver)
 
-    if len(updateList) == 0:
-        retry_wait(7, "[업데이트목록] ")
-        updateList = parseList(folerList, driver)
-        if len(updateList) == 0:
-            return filterDownloadedList(folerList, driver, page)
+    # if len(updateList) == 0:
+    #     retry_wait(7, "[업데이트목록] ")
+    #     updateList = parseList(folerList, driver)
+    #     if len(updateList) == 0:
+    #         return filterDownloadedList(folerList, driver, page)
 
     return updateList
 

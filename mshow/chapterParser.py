@@ -10,7 +10,7 @@ import pathlib
 import re
 import time
 
-BASE_URL = '/bbs/board.php?bo_table=msm_manga&wr_id='
+BASE_URL = '/bbs/board.php?bo_table=manga&wr_id='
 
 
 def saveFolderPath(titlePath, chapter, num):

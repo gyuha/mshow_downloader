@@ -17,10 +17,14 @@ CUSTOM_USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 \
 (KHTML, like Gecko) Chrome/40.0.2214.91 Safari/537.36'
 
 def pathName(path):
-    path = re.sub(r"NEW\t+", '', path)
+    path = re.sub(r"NEW\t+", "", path)
+
+    path = path.replace('\n', '')
+    path = re.sub(r"\t.*$", "", path)
     path = path.replace(':', '').replace('?', '').replace('/', '').replace('!', '').replace('\\', '')
-    path = path.replace("「", " ").replace("」", '').replace(".", "").replace('\t', ' ')
+    path = path.replace("「", " ").replace("」", '').replace(".", "")
     path = path.replace("<", "").replace(">", "")
+
     path = path.strip()
     return path
 

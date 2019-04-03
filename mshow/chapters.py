@@ -1,7 +1,7 @@
 import time
 from mshow.config import Config
 from bs4 import BeautifulSoup
-
+from mshow.imagesDownload import pathName
 from mshow.driver import retry_wait, reconnect
 
 base_url = "/bbs/page.php?hid=manga_detail&manga_name="
@@ -87,6 +87,7 @@ def chapterListParser(driver, title):
     data = []
     for slot in reversed(chapterList):
         text = slot.find("div", {"class":"title"}).getText().strip()
+        text = pathName(text)
         data.append({
             "title": text,
             "wr_id": slot["data-wrid"]
