@@ -1,3 +1,4 @@
+import time
 from bs4 import BeautifulSoup
 from collections import OrderedDict
 from mshow.config import Config
@@ -26,6 +27,7 @@ def existDownload(folerList, title):
 def parseList(folerList, driver):
     updateList = []
     try:
+        time.sleep(1)
         html = driver.page_source
         bs = BeautifulSoup(html, "html.parser")
 

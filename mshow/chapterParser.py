@@ -78,6 +78,7 @@ def comicsDownload(driver, title, downloadFolder):
 
 
 def parseImages(driver):
+    time.sleep(1)
     html = driver.page_source
 
     chapter = 0
