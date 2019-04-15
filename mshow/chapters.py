@@ -7,7 +7,6 @@ from mshow.driver import retry_wait, reconnect
 base_url = "/bbs/page.php?hid=manga_detail&manga_name="
 
 def parseChaterList(driver):
-    time.sleep(1)
     html = driver.page_source
 
     if "총 0화" in html:
@@ -79,7 +78,6 @@ def chapterListParser(driver, title):
         print("잘 못 된 URL입니다.")
         return [], publish_type, tags, author
 
-    time.sleep(1)
     html = driver.page_source
     bs = BeautifulSoup(html, "html.parser")
     publish_type = publishType(bs)
