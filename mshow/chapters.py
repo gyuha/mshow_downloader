@@ -4,10 +4,12 @@ from bs4 import BeautifulSoup
 from mshow.imagesDownload import pathName
 from mshow.driver import retry_wait, reconnect
 
-base_url = "/bbs/page.php?hid=manga_detail&manga_name="
+base_url = "/bbs/page.php?hid=manga_detail&manga_id="
 
 def parseChaterList(driver):
+    time.sleep(6)
     html = driver.page_source
+    print(html)
 
     if "총 0화" in html:
         return [], False
@@ -25,7 +27,7 @@ def parseChaterList(driver):
 def publishType(bs):
     publis_type = ""
     try:
-         publis_type = bs.find("a", {"class": "publish_type"}).text.strip()
+         publis_type = bs.find("a").text.strip()
     except Exception:
         return ""
     return publis_type
