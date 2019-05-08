@@ -100,10 +100,11 @@ if __name__ == '__main__':
         multipleDownload(driver, downList)
     else:
         # 그냥 하나씩 다운로드
-        bookTitle = input("[*] Please input book title: ")
-        bookTitle = bookTitle.strip()
-        driver = driver_init()
         config = Config()
-        comicsDownload(driver, bookTitle, config.getDownloadPath())
+        print(config.getDomain() + "/bbs/page.php?hid=manga_detail&manga_id=[xxxx]")
+        mangaId = input("[*] 책 아이디 : ")
+        # bookTitle = bookTitle.strip()
+        driver = driver_init()
+        comicsDownload(driver, mangaId, config.getDownloadPath())
     
     driver_close(driver)

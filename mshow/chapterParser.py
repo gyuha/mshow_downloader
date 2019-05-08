@@ -20,8 +20,8 @@ def saveFolderPath(titlePath, chapter, num):
 
 
 # 만화책에서 이미지 목록을 가져 와서 다운로드 하기
-def comicsDownload(driver, title, downloadFolder):
-    chaterList, public_type, tags, author = chapterListParser(driver, title)
+def comicsDownload(driver, mangaId, downloadFolder):
+    chaterList, public_type, tags, author, title = chapterListParser(driver, mangaId)
 
     if len(chaterList) == 0:
         print("[Error] 이미지를 찾을 수 없습니다. 타이틀을 확인 해 주세요.")

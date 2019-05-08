@@ -16,7 +16,7 @@ def driver_init():
         dirver_file = './chromedriver'
     driver = webdriver.Chrome(executable_path=dirver_file,
                               chrome_options=chrome_options)
-    driver.implicitly_wait(5)
+    driver.implicitly_wait(1)
 
     return driver
 

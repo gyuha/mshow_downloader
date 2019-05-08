@@ -7,9 +7,8 @@ from mshow.driver import retry_wait, reconnect
 base_url = "/bbs/page.php?hid=manga_detail&manga_id="
 
 def parseChaterList(driver):
-    time.sleep(6)
+    # time.sleep(6)
     html = driver.page_source
-    print(html)
 
     if "총 0화" in html:
         return [], False
@@ -53,10 +52,18 @@ def publishAuthor(bs):
         return ""
     return author
 
+def publishTitle(bs):
+    author = ""
+    try:
+         author = bs.find("div", {"class": "manga-subject"}).text.strip()
+    except Exception:
+        return ""
+    return author
+
 # 만화의 챕터 목록 가져 오기
-def chapterListParser(driver, title):
+def chapterListParser(driver, mangaId):
     c = Config()
-    url = c.getDomain() + base_url + title
+    url = c.getDomain() + base_url + mangaId
     publish_type = ""
     tags = []
     author = ""
@@ -65,16 +72,16 @@ def chapterListParser(driver, title):
         driver.get(url)
     except Exception:
         reconnect(driver)
-        return chapterListParser(driver, title)
+        return chapterListParser(driver, mangaId)
 
     chapterList = []
     valid = True
     chapterList, valid = parseChaterList(driver)
     if len(chapterList) == 0 and valid == True:
-        retry_wait(7, "[도서 목록] ")
+        retry_wait(6, "[도서 목록] ")
         chapterList, valid = parseChaterList(driver)
         if len(chapterList) == 0:
-            return chapterListParser(driver, title)
+            return chapterListParser(driver, mangaId)
 
     if not valid:
         print("잘 못 된 URL입니다.")
@@ -85,6 +92,7 @@ def chapterListParser(driver, title):
     publish_type = publishType(bs)
     tags = publishTags(bs)
     author = publishAuthor(bs)
+    title = publishTitle(bs)
 
     data = []
     for slot in reversed(chapterList):
@@ -95,4 +103,4 @@ def chapterListParser(driver, title):
             "wr_id": slot["data-wrid"]
         })
 
-    return data, publish_type, tags, author
+    return data, publish_type, tags, author, title
