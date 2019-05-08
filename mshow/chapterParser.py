@@ -71,7 +71,8 @@ def comicsDownload(driver, mangaId, downloadFolder):
             'skip': num-1,
             'title': title,
             'public_type': public_type,
-            'tags': tags
+            'tags': tags,
+            'id': mangaId
         }
         saveJsonFile(os.path.join(titlePath, "data.json"), json)
     print("[*] Download Complete")

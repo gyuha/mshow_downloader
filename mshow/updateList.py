@@ -11,19 +11,31 @@ import re
 
 LIST_URL = "%s/bbs/board.php?bo_table=manga&page=%d"
 
+# 기존에 다운로드 받았던 id 목록
+def downloadFiles(folderList):
+    downloadList = []
+    for downloaded in folderList:
+        data = loadJsonFile(os.path.join("download", downloaded, "data.json"))
+        if not data:
+            continue
+        if "id" in data:
+            downloadList.append(data["id"])
+    return downloadList
+
+
 # 다운받은적 있는지 무식하게 찾는다
-def existDownload(folerList, title):
-    title = pathName(title)
+def existDownload(folerList, mangaId):
     for downloaded in folerList:
-        if downloaded in title:
-            data = loadJsonFile(os.path.join("download", downloaded, "data.json"))
-            if not data:
-                return ""
-            if "title" in data:
-                return data["title"]
+        data = loadJsonFile(os.path.join("download", downloaded, "data.json"))
+        if not data:
+            continue
+        if "id" in data:
+            if mangaId == data["id"]:
+                return data["id"]
     return ""
 
-def parseList(folerList, driver):
+def parseList(folderList, driver):
+    downloadedList = downloadFiles(folderList)
     updateList = []
     try:
         html = driver.page_source
@@ -31,16 +43,16 @@ def parseList(folerList, driver):
 
         subjects = bs.find("div", {"class", "list-container"}).find_all("div", {"class", "post-info"})
         for subject in subjects:
-            title = subject.find("a")['href']
-            title = urllib.parse.unquote(title)
-            title = re.sub(r"^.*manga_name=", "", title)
-            title = title.replace("+", " ")
+            mangaId = subject.find("a")['href']
+            mangaId = urllib.parse.unquote(mangaId)
+            mangaId = re.sub(r"^.*manga_id=", "", mangaId)
+            mangaId = mangaId.replace("+", " ")
             # print(title)
-            if title == "":
+            if mangaId == "":
                 continue
-            downloaded = existDownload(folerList, title)
-            if downloaded != "":
-                updateList.append(downloaded)
+            if mangaId in downloadedList:
+                if mangaId not in updateList:
+                    updateList.append(mangaId)
     except Exception as e: 
         print(e)
         return updateList
