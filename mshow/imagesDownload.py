@@ -53,7 +53,7 @@ def imagesDownload(savePath, images, chapter, seed):
     if seed > 0:
         convertImages(savePath, chapter, seed)
 
-    __zipFolder(savePath + ".zip", savePath)
+    __zipFolder(savePath + ".cbz", savePath)
     shutil.rmtree(savePath, ignore_errors=True)
 
 
