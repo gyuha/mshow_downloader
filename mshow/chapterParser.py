@@ -52,7 +52,7 @@ def comicsDownload(driver, mangaId, downloadFolder):
         print(" "*80, end="\r")
         print("[" + str(num) + "/" + str(len(chaterList)) + "] 다운로드 : " + d["title"])
         num = num + 1
-        if os.path.exists(savePath + "." + c.getFileExtension) or os.path.exists(savePath + ".zip") :
+        if os.path.exists(savePath + "." + c.getFileExtension()) or os.path.exists(savePath + ".zip") :
             print("  이미 압축한 파일 :" + d["title"])
             continue
         print("  Get image list by url..", end="\r")
