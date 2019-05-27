@@ -88,10 +88,10 @@ def parseImages(driver):
     if "뷰어로 보기" not in html:
         return [], chapter, seed, False
 
-    strData = re.search(r'var\s+img_list1\s+=\s+(.*);', html).group(1)
+    strData = re.search(r'var\s+img_list\s+=\s+(.*);', html).group(1)
     image_urls = json.loads(strData)
     if len(image_urls) == 0:
-        strData = re.search(r'var\s+img_list\s+=\s+(.*);', html).group(1)
+        strData = re.search(r'var\s+img_list1\s+=\s+(.*);', html).group(1)
         if not strData:
             return [], chapter, seed, False
         image_urls = json.loads(strData)
