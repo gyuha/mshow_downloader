@@ -88,17 +88,24 @@ def parseImages(driver):
     if "뷰어로 보기" not in html:
         return [], chapter, seed, False
 
+    img_list = []
     strData = re.search(r'var\s+img_list\s+=\s+(.*);', html).group(1)
-    image_urls = json.loads(strData)
-    if len(image_urls) == 0:
-        strData = re.search(r'var\s+img_list1\s+=\s+(.*);', html).group(1)
-        if not strData:
-            return [], chapter, seed, False
-        image_urls = json.loads(strData)
+    urls1 = json.loads(strData)
+    strData = re.search(r'var\s+img_list1\s+=\s+(.*);', html).group(1)
+    urls2 = json.loads(strData)
 
-    if len(image_urls) == 0:
-        return [], chapter, seed, False
-    
+    max = len(urls1)
+    if len(urls1) < len(urls2):
+        max = len(urls2)
+
+    for i in range(max):
+        u = []
+        if (i < len(urls1)): 
+            u.append(urls1[i].replace('img.', 's3.'))
+        if (i < len(urls2)):
+            u.append(urls2[i].replace('img.', 's3.'))
+        img_list.append(u)
+
     chapter = int(re.search(r'var\s+chapter\s+=\s+(.*);', html).group(1))
     seed = int(re.search(r'var\s+view_cnt\s+=\s+(.*);', html).group(1))
     
@@ -108,7 +115,7 @@ def parseImages(driver):
     #     contents = bs.find("div", {"class": "view-content"}).find_all("img")
     # except Exception as e:
     #     print(e)``
-    return image_urls, chapter, seed, True
+    return img_list, chapter, seed, True
 
 
 def getImageList(driver, url):

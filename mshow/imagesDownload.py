@@ -31,20 +31,19 @@ def pathName(path):
 def imagesDownload(savePath, images, chapter, seed):
     pathlib.Path(savePath).mkdir(parents=True, exist_ok=True)
     target = []
-    i = 1
-    c = Config()
+    # c = Config()
 
-    for img in images:
-        img = re.sub(r"mangashow\d.me", c.getName(), img)
-        target.append([img, savePath, i])
-        i = i + 1
+    for i, img in enumerate(images):
+        # img = re.sub(r"mangashow\d.me", c.getName(), img[0])
+        target.append([img, savePath, i+1])
     
     pool = Pool(processes=cpu_count())
     try:
+        # for tar in target:
+        #     __downloadFromUrl(tar)
         for _ in tqdm.tqdm(pool.imap_unordered(__downloadFromUrl, target), 
             total=len(target), ncols=68, desc="    Download", leave=False):
             pass
-        # pool.map(__downloadFromUrl, target)
     finally:
         pool.close()
         pool.join()
@@ -76,7 +75,9 @@ def __downloadFromUrl(p):
         requests.urllib3.disable_warnings()
         s = requests.Session()
         s.headers.update({'User-Agent': CUSTOM_USER_AGENT})
-        r = s.get(url, stream=True, verify=False)
+        r = s.get(url[0], stream=True, verify=False)
+        if (r.status_code == 404 and len(url) == 2 ):
+            r = s.get(url[1], stream=True, verify=False)
         with open(outputPath, 'wb') as f:
             for chunk in r.iter_content(chunk_size=1024):
                 f.write(chunk)
