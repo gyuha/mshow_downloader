@@ -101,9 +101,9 @@ def parseImages(driver):
     for i in range(max):
         u = []
         if (i < len(urls1)): 
-            u.append(urls1[i].replace('img.', 's3.'))
+            u.append(urls1[i])
         if (i < len(urls2)):
-            u.append(urls2[i].replace('img.', 's3.'))
+            u.append(urls2[i])
         img_list.append(u)
 
     chapter = int(re.search(r'var\s+chapter\s+=\s+(.*);', html).group(1))

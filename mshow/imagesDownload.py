@@ -76,8 +76,12 @@ def __downloadFromUrl(p):
         s = requests.Session()
         s.headers.update({'User-Agent': CUSTOM_USER_AGENT})
         r = s.get(url[0], stream=True, verify=False)
+        if (r.status_code == 404 ):
+            r = s.get(url[0].replace('img.', 's3.'), stream=True, verify=False)
         if (r.status_code == 404 and len(url) == 2 ):
             r = s.get(url[1], stream=True, verify=False)
+        if (r.status_code == 404 and len(url) == 2 ):
+            r = s.get(url[1].replace('img.', 's3.'), stream=True, verify=False)
         with open(outputPath, 'wb') as f:
             for chunk in r.iter_content(chunk_size=1024):
                 f.write(chunk)
