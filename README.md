@@ -29,10 +29,11 @@ $ pip install -r requirements.txt
 
 ## How to use
 ```cmd
-$ python main.py
+$ python mangashowme.py
 ```
 
 ## Make Install file..
+빌드 할 때는 python이 3.6 버전이여야 한다.
 ```cmd
 auto-pi-to-exe
 ```

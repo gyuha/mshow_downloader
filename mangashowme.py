@@ -16,8 +16,8 @@ def usage():
     print("  -u, --update\t\tupdate downded comics")
     print("  -s, --size=SIZE\tupdate checked size(pages)")
     print("  -d, --download=FILE\tdownload by title list file..")
-    print("  -c, --config=FILE\tselect config file..")
     print("  -l, --list=SIZE\tget comics list..")
+    print("  -t, --twitter\t\tupdate url by twitter")
     print("")
     print("If there is not any arguments, download by the comic title...")
 
@@ -31,7 +31,7 @@ def arguments():
     listSize = 0
 
     try:
-        opts, _ = getopt.getopt(sys.argv[1:],"c:s:d:l:uh",["help","update","config=","size=", "download=", "list="])
+        opts, _ = getopt.getopt(sys.argv[1:],"c:s:d:l:uh:t",["help","update","config=","size=", "download=", "list=", "twitter"])
     except getopt.GetoptError as err:
         print(str(err))
         print("")
@@ -42,7 +42,9 @@ def arguments():
     if os.path.exists(defaultIni):
         config = Config()
         config.loadConfig(defaultIni)
-
+    else:
+        print("ERROR: Cant not find config.ini")
+        exit()
     
     for opt, arg in opts:
         if opt in ("-h", "--help"):
@@ -56,9 +58,9 @@ def arguments():
             downloadFile = arg
         elif opt in ("-l", "--list"):
             listSize = arg
-        elif opt in ("-c", "--config"):
-            config = Config()
-            config.loadConfig(arg)
+        elif opt in ("-t", "--twitter"):
+            config.getHostByTwitter(defaultIni)
+            exit()
 
     return isUpdate, updateSize, downloadFile, listSize
 
