@@ -78,6 +78,8 @@ def __downloadFromUrl(p):
         r = s.get(url[0], stream=True, verify=False)
         if (r.status_code == 404 ):
             r = s.get(url[0].replace('img.', 's3.'), stream=True, verify=False)
+        if (r.status_code == 404 ):
+            r = s.get(url[0].replace('cdnwowmax', 's3.cdnwowmax'), stream=True, verify=False)
         if (r.status_code == 404 and len(url) == 2 ):
             r = s.get(url[1], stream=True, verify=False)
         if (r.status_code == 404 and len(url) == 2 ):
