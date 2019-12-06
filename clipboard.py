@@ -11,7 +11,7 @@ def addClipToText(str):
   if "manamoa" not in str and "manga_id" not in str:
     return
   clip = str
-  q = parse_qs(urlparse(str).query)["manga_id"]
+  q = parse_qs(urlparse(str).query).get('manga_id')
   f = open("list.txt", "a")
   f.write(q[0] + "\r")
   f.close()
