@@ -11,6 +11,7 @@ import re
 import time
 
 BASE_URL = '/bbs/board.php?bo_table=manga&wr_id='
+imageDownloadTryCount = 0
 
 
 def saveFolderPath(titlePath, chapter, num):
@@ -21,7 +22,9 @@ def saveFolderPath(titlePath, chapter, num):
 
 # 만화책에서 이미지 목록을 가져 와서 다운로드 하기
 def comicsDownload(driver, mangaId, downloadFolder):
-    chaterList, public_type, tags, author, title = chapterListParser(driver, mangaId)
+    chaterList, public_type, tags, author, title = chapterListParser(
+        driver, mangaId)
+    global imageDownloadTryCount
 
     if len(chaterList) == 0:
         print("[Error] 이미지를 찾을 수 없습니다. 타이틀을 확인 해 주세요.")
@@ -52,11 +55,12 @@ def comicsDownload(driver, mangaId, downloadFolder):
         print(" "*80, end="\r")
         print("[" + str(num) + "/" + str(len(chaterList)) + "] 다운로드 : " + d["title"])
         num = num + 1
-        if os.path.exists(savePath + "." + c.getFileExtension()) or os.path.exists(savePath + ".zip") :
+        if os.path.exists(savePath + "." + c.getFileExtension()) or os.path.exists(savePath + ".zip"):
             print("  이미 압축한 파일 :" + d["title"])
             continue
         print("  Get image list by url..", end="\r")
 
+        imageDownloadTryCount = 0
         images, chapter, seed = getImageList(driver, url)
         print("  Download images..      ", end="\r")
 
@@ -100,7 +104,7 @@ def parseImages(driver):
 
     for i in range(max):
         u = []
-        if (i < len(urls1)): 
+        if (i < len(urls1)):
             u.append(urls1[i])
         if (i < len(urls2)):
             u.append(urls2[i])
@@ -108,7 +112,7 @@ def parseImages(driver):
 
     chapter = int(re.search(r'var\s+chapter\s+=\s+(.*);', html).group(1))
     seed = int(re.search(r'var\s+view_cnt\s+=\s+(.*);', html).group(1))
-    
+
     # print(image_urls)
     # contents = []
     # try:
@@ -119,6 +123,8 @@ def parseImages(driver):
 
 
 def getImageList(driver, url):
+    global imageDownloadTryCount
+    imageDownloadTryCount = imageDownloadTryCount + 1
     try:
         driver.get(url)
     except Exception:
@@ -129,6 +135,8 @@ def getImageList(driver, url):
 
     # 로딩이 되지 않았으면... 다시 읽기
     if loading == False:
+        if imageDownloadTryCount > 2:
+            return [], 0, 0
         retry_wait(7, "[이미지목록] ")
         contents, chapter, seed, loading = parseImages(driver)
         # 시간이 지났는데도 로딩이 되지 않으면..
@@ -137,6 +145,6 @@ def getImageList(driver, url):
 
     # 로딩이 되었지만, 데이터가 없으면 패스
     if loading == True and len(contents) == 0:
-        return []
+        return [], 0, 0
 
     return contents, chapter, seed

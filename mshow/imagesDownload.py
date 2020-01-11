@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 from mshow.imageConverter import convertImages
+from mshow.imageCompress import imagesCompress
 from multiprocessing import Pool, cpu_count
 from os.path import basename
 from mshow.config import Config
@@ -16,17 +17,20 @@ import zipfile
 CUSTOM_USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 \
 (KHTML, like Gecko) Chrome/40.0.2214.91 Safari/537.36'
 
+
 def pathName(path):
     path = re.sub(r"NEW\t+", "", path)
 
     path = path.replace('\n', '')
     path = re.sub(r"\t.*$", "", path)
-    path = path.replace(':', '').replace('?', '').replace('/', '').replace('!', '').replace('\\', '')
+    path = path.replace(':', '').replace('?', '').replace(
+        '/', '').replace('!', '').replace('\\', '')
     path = path.replace("「", " ").replace("」", '').replace(".", "")
     path = path.replace("<", "").replace(">", "")
 
     path = path.strip()
     return path
+
 
 def imagesDownload(savePath, images, chapter, seed):
     pathlib.Path(savePath).mkdir(parents=True, exist_ok=True)
@@ -36,13 +40,13 @@ def imagesDownload(savePath, images, chapter, seed):
     for i, img in enumerate(images):
         # img = re.sub(r"mangashow\d.me", c.getName(), img[0])
         target.append([img, savePath, i+1])
-    
+
     pool = Pool(processes=cpu_count())
     try:
         # for tar in target:
         #     __downloadFromUrl(tar)
-        for _ in tqdm.tqdm(pool.imap_unordered(__downloadFromUrl, target), 
-            total=len(target), ncols=68, desc="    Download", leave=False):
+        for _ in tqdm.tqdm(pool.imap_unordered(__downloadFromUrl, target),
+                           total=len(target), ncols=68, desc="    Download", leave=False):
             pass
     finally:
         pool.close()
@@ -51,6 +55,7 @@ def imagesDownload(savePath, images, chapter, seed):
     print(" "*80, end="\r")
     if seed > 0:
         convertImages(savePath, chapter, seed)
+    imagesCompress(savePath)
 
     __zipFolder(savePath + ".cbz", savePath)
     shutil.rmtree(savePath, ignore_errors=True)
@@ -76,17 +81,17 @@ def __downloadFromUrl(p):
         s = requests.Session()
         s.headers.update({'User-Agent': CUSTOM_USER_AGENT})
         r = s.get(url[0], stream=True, verify=False)
-        if (r.status_code == 404 ):
+        if (r.status_code == 404):
             r = s.get(url[0].replace('img.', 's3.'), stream=True, verify=False)
-        if (r.status_code == 404 ):
-            r = s.get(url[0].replace('cdnwowmax', 's3.cdnwowmax'), stream=True, verify=False)
-        if (r.status_code == 404 and len(url) == 2 ):
+        if (r.status_code == 404):
+            r = s.get(url[0].replace('cdnwowmax', 's3.cdnwowmax'),
+                      stream=True, verify=False)
+        if (r.status_code == 404 and len(url) == 2):
             r = s.get(url[1], stream=True, verify=False)
-        if (r.status_code == 404 and len(url) == 2 ):
+        if (r.status_code == 404 and len(url) == 2):
             r = s.get(url[1].replace('img.', 's3.'), stream=True, verify=False)
         with open(outputPath, 'wb') as f:
-            for chunk in r.iter_content(chunk_size=1024):
+            for chunk in r.iter_content(chunk_size=4096):
                 f.write(chunk)
     except:
         return
-    
