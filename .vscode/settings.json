@@ -1,5 +1,5 @@
 {
     "python.terminal.activateEnvironment": true,
-    "python.pythonPath": "venv\\Scripts\\python.exe",
+    "python.pythonPath": "C:\\Users\\gyuha\\.pyenv\\pyenv-win\\versions\\3.6.8\\python.exe",
     "python.linting.pylintEnabled": true
 }

@@ -5,16 +5,30 @@
 ## Description
 Download the comics registered on the web site
 
+이 프로젝트를 실행하기 위해서는 Python 3.6.8이 필요 함.
+왜 인지를 모르겠음 ㅜ.ㅜ
 
 
 ## Use
 ### Install files...
 
 #### Windows
+파이썬을 3.6.8을 설치해 준다.
+pyenv-win으로 설치하면 조금 쉽다.
+
+
 ```cmd
-$ python -m venv venv
-$ .\venv\Scripts\activate.bat
-$ pip install -r requirements.txt
+> C:/Users/gyuha/.pyenv/pyenv-win/versions/3.6.8/python.exe -m pip install virtualenv
+> C:/Users/gyuha/.pyenv/pyenv-win/versions/3.6.8/python.exe -m virtualenv venv
+> .\venv\Scripts\activate.bat
+> pip install -r requirements.txt
+```
+
+
+```cmd
+> python -m venv venv
+> .\venv\Scripts\activate.bat
+> pip install -r requirements.txt
 ```
 
 #### Linux
