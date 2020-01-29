@@ -1,10 +1,14 @@
 import time
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
 from mshow.config import Config
 from bs4 import BeautifulSoup
 from mshow.imagesDownload import pathName
 from mshow.driver import retry_wait, reconnect
 
 base_url = "/bbs/page.php?hid=manga_detail&manga_id="
+
 
 def parseChaterList(driver):
     # time.sleep(6)
@@ -16,7 +20,8 @@ def parseChaterList(driver):
 
     chapterList = []
     try:
-        chapterList = bs.find("div", {"class": "chapter-list"}).find_all("div", {"class": "slot"})
+        chapterList = bs.find(
+            "div", {"class": "chapter-list"}).find_all("div", {"class": "slot"})
     except Exception as e:
         print(e)
 
@@ -26,10 +31,11 @@ def parseChaterList(driver):
 def publishType(bs):
     publis_type = ""
     try:
-         publis_type = bs.find("a").text.strip()
+        publis_type = bs.find("a").text.strip()
     except Exception:
         return ""
     return publis_type
+
 
 def publishTags(bs):
     tags = []
@@ -37,30 +43,34 @@ def publishTags(bs):
         aTags = bs.find_all("a", {"class": "tag"})
     except Exception:
         return []
-    
+
     for tag in aTags:
         t = tag.text.strip()
         if len(t) > 0:
             tags.append(t)
     return tags
 
+
 def publishAuthor(bs):
     author = ""
     try:
-         author = bs.find("a", {"class": "author"}).text.strip()
+        author = bs.find("a", {"class": "author"}).text.strip()
     except Exception:
         return ""
     return author
 
+
 def publishTitle(bs):
     author = ""
     try:
-         author = bs.find("div", {"class": "manga-subject"}).text.strip()
+        author = bs.find("div", {"class": "manga-subject"}).text.strip()
     except Exception:
         return ""
     return author
 
 # 만화의 챕터 목록 가져 오기
+
+
 def chapterListParser(driver, mangaId):
     c = Config()
     url = c.getDomain() + base_url + mangaId
@@ -68,8 +78,12 @@ def chapterListParser(driver, mangaId):
     tags = []
     author = ""
 
-    try: 
+    wait = WebDriverWait(driver, 10)
+    try:
         driver.get(url)
+        wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, '#thema_wrapper')))
+        driver.execute_script("window.stop();")
     except Exception:
         reconnect(driver)
         return chapterListParser(driver, mangaId)
@@ -96,7 +110,7 @@ def chapterListParser(driver, mangaId):
 
     data = []
     for slot in reversed(chapterList):
-        text = slot.find("div", {"class":"title"}).getText().strip()
+        text = slot.find("div", {"class": "title"}).getText().strip()
         text = pathName(text)
         data.append({
             "title": text,

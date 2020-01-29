@@ -1,4 +1,7 @@
 from bs4 import BeautifulSoup
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
 from mshow.chapters import chapterListParser
 from mshow.config import Config
 from mshow.dataSave import saveJsonFile, loadJsonFile
@@ -125,8 +128,12 @@ def parseImages(driver):
 def getImageList(driver, url):
     global imageDownloadTryCount
     imageDownloadTryCount = imageDownloadTryCount + 1
+    wait = WebDriverWait(driver, 10)
     try:
         driver.get(url)
+        wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, '#thema_wrapper')))
+        driver.execute_script("window.stop();")
     except Exception:
         reconnect(driver)
         return getImageList(driver, url)
