@@ -78,7 +78,7 @@ def chapterListParser(driver, mangaId):
     tags = []
     author = ""
 
-    wait = WebDriverWait(driver, 10)
+    wait = WebDriverWait(driver, 30)
     try:
         driver.get(url)
         wait.until(EC.presence_of_element_located(

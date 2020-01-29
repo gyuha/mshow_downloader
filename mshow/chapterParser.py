@@ -128,7 +128,7 @@ def parseImages(driver):
 def getImageList(driver, url):
     global imageDownloadTryCount
     imageDownloadTryCount = imageDownloadTryCount + 1
-    wait = WebDriverWait(driver, 10)
+    wait = WebDriverWait(driver, 30)
     try:
         driver.get(url)
         wait.until(EC.presence_of_element_located(
