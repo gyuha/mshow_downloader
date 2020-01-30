@@ -96,10 +96,15 @@ def parseImages(driver):
         return [], chapter, seed, False
 
     img_list = []
-    strData = re.search(r'var\s+img_list\s+=\s+(.*);', html).group(1)
-    urls1 = json.loads(strData)
-    strData = re.search(r'var\s+img_list1\s+=\s+(.*);', html).group(1)
-    urls2 = json.loads(strData)
+    urls1 = []
+    urls2 = []
+    try:
+        strData = re.search(r'var\s+img_list\s+=\s+(.*);', html).group(1)
+        urls1 = json.loads(strData)
+        strData = re.search(r'var\s+img_list1\s+=\s+(.*);', html).group(1)
+        urls2 = json.loads(strData)
+    except Exception:
+        return [], chapter, seed, False
 
     max = len(urls1)
     if len(urls1) < len(urls2):
@@ -133,8 +138,6 @@ def getImageList(driver, url):
         driver.get(url)
         wait.until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, '#thema_wrapper')))
-        wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, '#cf-wrapper')))
         driver.execute_script("window.stop();")
     except Exception:
         # reconnect(driver)
