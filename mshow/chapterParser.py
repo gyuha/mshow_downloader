@@ -17,9 +17,8 @@ BASE_URL = '/bbs/board.php?bo_table=manga&wr_id='
 imageDownloadTryCount = 0
 
 
-def saveFolderPath(titlePath, chapter, num):
-    chapter = pathName(chapter)
-    path = os.path.join(titlePath, "%03d" % (num,) + "-" + pathName(chapter))
+def saveFolderPath(titlePath, num):
+    path = os.path.join(titlePath, "%03d" % (num,))
     return path
 
 
@@ -54,7 +53,7 @@ def comicsDownload(driver, mangaId, downloadFolder):
                   "] 패스 : " + d["title"], end="\r")
             num = num + 1
             continue
-        savePath = saveFolderPath(titlePath, d["title"], num)
+        savePath = saveFolderPath(titlePath, num)
         print(" "*80, end="\r")
         print("[" + str(num) + "/" + str(len(chaterList)) + "] 다운로드 : " + d["title"])
         num = num + 1
@@ -70,7 +69,7 @@ def comicsDownload(driver, mangaId, downloadFolder):
         if len(images) == 0:
             print("  이미지를 찾을 수 없습니다. 패스")
             continue
-        imagesDownload(savePath, images, chapter, seed)
+        imagesDownload(title, savePath, images, chapter, seed)
 
         # 최근 받은 파일을 JSON으로 저장하기
         json = {

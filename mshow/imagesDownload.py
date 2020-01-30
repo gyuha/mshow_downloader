@@ -32,7 +32,7 @@ def pathName(path):
     return path
 
 
-def imagesDownload(savePath, images, chapter, seed):
+def imagesDownload(title, savePath, images, chapter, seed):
     pathlib.Path(savePath).mkdir(parents=True, exist_ok=True)
     target = []
     # c = Config()
@@ -57,7 +57,7 @@ def imagesDownload(savePath, images, chapter, seed):
         convertImages(savePath, chapter, seed)
     imagesCompress(savePath)
 
-    __zipFolder(savePath + ".cbz", savePath)
+    __zipFolder(savePath + "-" + pathName(title) + ".cbz", savePath)
     shutil.rmtree(savePath, ignore_errors=True)
 
 
