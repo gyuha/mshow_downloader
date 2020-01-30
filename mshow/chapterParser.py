@@ -133,9 +133,14 @@ def getImageList(driver, url):
         driver.get(url)
         wait.until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, '#thema_wrapper')))
+        wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, '#cf-wrapper')))
         driver.execute_script("window.stop();")
     except Exception:
-        reconnect(driver)
+        # reconnect(driver)
+        print('사이트 읽기 오류')
+        if imageDownloadTryCount > 2:
+            return [], 0, 0
         return getImageList(driver, url)
 
     contents, chapter, seed, loading = parseImages(driver)
