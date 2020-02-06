@@ -22,7 +22,7 @@ def driver_init():
     driver = webdriver.Chrome(executable_path=dirver_file,
                               chrome_options=chrome_options,
                               desired_capabilities=capa)
-    driver.implicitly_wait(1)
+    driver.implicitly_wait(5)
 
     return driver
 

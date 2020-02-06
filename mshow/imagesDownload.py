@@ -53,7 +53,7 @@ def imagesDownload(title, savePath, images, chapter, seed):
         pool.join()
 
     print(" "*80, end="\r")
-    if seed > 0:
+    if int(seed) > 0:
         convertImages(savePath, chapter, seed)
     imagesCompress(savePath)
 

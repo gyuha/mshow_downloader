@@ -135,8 +135,9 @@ def getImageList(driver, url):
     wait = WebDriverWait(driver, 30)
     try:
         driver.get(url)
-        wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, '#thema_wrapper')))
+        wait.until(EC.visibility_of_element_located(
+            (By.CSS_SELECTOR, '.scroll-viewer')))
+        time.sleep(1)
         driver.execute_script("window.stop();")
     except Exception:
         # reconnect(driver)
