@@ -94,6 +94,9 @@ def parseImages(driver):
     if "뷰어로 보기" not in html:
         return [], chapter, seed, False
 
+    cdnDomains = re.search(r'var\s+cdn_domains\s+=\s+(.*);', html).group(1)
+    domains = json.loads(cdnDomains)
+
     img_list = []
     urls1 = []
     urls2 = []
@@ -105,20 +108,27 @@ def parseImages(driver):
     except Exception:
         return [], chapter, seed, False
 
+    chapter = int(re.search(r'var\s+chapter\s+=\s+(.*);', html).group(1))
+    seed = int(re.search(r'var\s+view_cnt\s+=\s+(.*);', html).group(1))
+
     max = len(urls1)
     if len(urls1) < len(urls2):
         max = len(urls2)
 
     for i in range(max):
         u = []
+        t = domains[(chapter + 4 * i) % len(domains)]
         if (i < len(urls1)):
+            urls1[i] = urls1[i].replace("cdntigermask.xyz", t)
+            urls1[i] = urls1[i].replace("cdnmadmax.xyz", t)
+            urls1[i] = urls1[i].replace("filecdn.xyz", t)
             u.append(urls1[i])
         if (i < len(urls2)):
+            urls2[i] = urls2[i].replace("cdntigermask.xyz", t)
+            urls2[i] = urls2[i].replace("cdnmadmax.xyz", t)
+            urls2[i] = urls2[i].replace("filecdn.xyz", t)
             u.append(urls2[i])
         img_list.append(u)
-
-    chapter = int(re.search(r'var\s+chapter\s+=\s+(.*);', html).group(1))
-    seed = int(re.search(r'var\s+view_cnt\s+=\s+(.*);', html).group(1))
 
     # print(image_urls)
     # contents = []
