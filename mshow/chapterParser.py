@@ -105,11 +105,11 @@ def parseImages(driver):
         urls1 = json.loads(strData)
         strData = re.search(r'var\s+img_list1\s+=\s+(.*);', html).group(1)
         urls2 = json.loads(strData)
+
+        chapter = int(re.search(r'var\s+chapter\s+=\s+(.*);', html).group(1))
+        seed = int(re.search(r'var\s+view_cnt\s+=\s+(.*);', html).group(1))
     except Exception:
         return [], chapter, seed, False
-
-    chapter = int(re.search(r'var\s+chapter\s+=\s+(.*);', html).group(1))
-    seed = int(re.search(r'var\s+view_cnt\s+=\s+(.*);', html).group(1))
 
     max = len(urls1)
     if len(urls1) < len(urls2):
@@ -147,7 +147,7 @@ def getImageList(driver, url):
         driver.get(url)
         wait.until(EC.visibility_of_element_located(
             (By.CSS_SELECTOR, '.scroll-viewer')))
-        time.sleep(1)
+        time.sleep(3)
         driver.execute_script("window.stop();")
     except Exception:
         # reconnect(driver)
