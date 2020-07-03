@@ -39,6 +39,7 @@ def comicsDownload(driver, mangaId, downloadFolder):
     titlePath = os.path.join(downloadFolder, pathName(title))
 
     pathlib.Path(titlePath).mkdir(parents=True, exist_ok=True)
+    os.utime(pathlib.Path(titlePath), None)
     skip_num = 0
     saveData = loadJsonFile(os.path.join(titlePath, "data.json"))
     if saveData:
@@ -94,8 +95,11 @@ def parseImages(driver):
     if "뷰어로 보기" not in html:
         return [], chapter, seed, False
 
-    cdnDomains = re.search(r'var\s+cdn_domains\s+=\s+(.*);', html).group(1)
-    domains = json.loads(cdnDomains)
+    try:
+        cdnDomains = re.search(r'var\s+cdn_domains\s+=\s+(.*);', html).group(1)
+        domains = json.loads(cdnDomains)
+    except Exception:
+        return [], chapter, seed, False
 
     img_list = []
     urls1 = []
