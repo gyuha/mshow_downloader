@@ -11,7 +11,6 @@ base_url = "/bbs/page.php?hid=manga_detail&manga_id="
 
 
 def parseChaterList(driver):
-    # time.sleep(6)
     html = driver.page_source
 
     if "총 0화" in html:
@@ -21,10 +20,11 @@ def parseChaterList(driver):
     chapterList = []
     try:
         chapterList = bs.find(
-            "div", {"class": "chapter-list"}).find_all("div", {"class": "slot"})
+            "div", {"class": "chapter-list"}).find_all("div", {"class": "slot"}, limit=None)
     except Exception as e:
         print(e)
-
+    # print(chapterList)
+    # print(len(chapterList))
     return chapterList, True
 
 
@@ -82,7 +82,7 @@ def chapterListParser(driver, mangaId):
     try:
         driver.get(url)
         wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, '#thema_wrapper')))
+            (By.CSS_SELECTOR, '.at-footer')))
         driver.execute_script("window.stop();")
     except Exception:
         reconnect(driver)
