@@ -84,7 +84,7 @@ def comicsDownload(driver, mangaId, downloadFolder):
   # 완결인 책자를 별도로 저장해 준다.
   if public_type == "완결" or public_type == "단편":
     print("#"*80)
-    print("#"*2 + "완결: " + title)
+    print("#"*2 + " 완결: " + title)
     print("#"*80)
     title = pathName(title)
     tar = os.path.join("complete", title)
