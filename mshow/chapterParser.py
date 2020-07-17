@@ -1,3 +1,5 @@
+import shutil
+from moveComplete import moveToCompleteFolder
 from bs4 import BeautifulSoup
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -18,162 +20,170 @@ imageDownloadTryCount = 0
 
 
 def saveFolderPath(titlePath, num):
-    path = os.path.join(titlePath, "%03d" % (num,))
-    return path
+  path = os.path.join(titlePath, "%03d" % (num,))
+  return path
 
 
 # 만화책에서 이미지 목록을 가져 와서 다운로드 하기
 def comicsDownload(driver, mangaId, downloadFolder):
-    chaterList, public_type, tags, author, title = chapterListParser(
-        driver, mangaId)
-    global imageDownloadTryCount
+  chaterList, public_type, tags, author, title = chapterListParser(
+      driver, mangaId)
+  global imageDownloadTryCount
 
-    if len(chaterList) == 0:
-        print("[Error] 이미지를 찾을 수 없습니다. 타이틀을 확인 해 주세요.")
-        return
+  if len(chaterList) == 0:
+    print("[Error] 이미지를 찾을 수 없습니다. 타이틀을 확인 해 주세요.")
+    return
 
-    # 완결인 책자를 별도로 저장해 준다.
-    if public_type == "완결":
-        downloadFolder = os.path.join(downloadFolder, "[완결]")
+  titlePath = os.path.join(downloadFolder, pathName(title))
 
-    titlePath = os.path.join(downloadFolder, pathName(title))
+  pathlib.Path(titlePath).mkdir(parents=True, exist_ok=True)
+  os.utime(pathlib.Path(titlePath), None)
+  skip_num = 0
+  saveData = loadJsonFile(os.path.join(titlePath, "data.json"))
+  if saveData:
+    skip_num = int(saveData["skip"])
 
-    pathlib.Path(titlePath).mkdir(parents=True, exist_ok=True)
-    os.utime(pathlib.Path(titlePath), None)
-    skip_num = 0
-    saveData = loadJsonFile(os.path.join(titlePath, "data.json"))
-    if saveData:
-        skip_num = int(saveData["skip"])
+  num = 1
+  for d in chaterList:
+    c = Config()
+    url = c.getDomain() + BASE_URL + d["wr_id"]
+    if skip_num >= num:
+      print("[" + str(num) + "/" + str(len(chaterList)) +
+            "] 패스 : " + d["title"], end="\r")
+      num = num + 1
+      continue
+    savePath = saveFolderPath(titlePath, num)
+    print(" "*80, end="\r")
+    print("[" + str(num) + "/" + str(len(chaterList)) + "] 다운로드 : " + d["title"])
+    num = num + 1
+    if os.path.exists(savePath + "." + c.getFileExtension()) or os.path.exists(savePath + ".zip"):
+      print("  이미 압축한 파일 :" + d["title"])
+      continue
+    print("  Get image list by url..", end="\r")
 
-    num = 1
-    for d in chaterList:
-        c = Config()
-        url = c.getDomain() + BASE_URL + d["wr_id"]
-        if skip_num >= num:
-            print("[" + str(num) + "/" + str(len(chaterList)) +
-                  "] 패스 : " + d["title"], end="\r")
-            num = num + 1
-            continue
-        savePath = saveFolderPath(titlePath, num)
-        print(" "*80, end="\r")
-        print("[" + str(num) + "/" + str(len(chaterList)) + "] 다운로드 : " + d["title"])
-        num = num + 1
-        if os.path.exists(savePath + "." + c.getFileExtension()) or os.path.exists(savePath + ".zip"):
-            print("  이미 압축한 파일 :" + d["title"])
-            continue
-        print("  Get image list by url..", end="\r")
+    imageDownloadTryCount = 0
+    images, chapter, seed = getImageList(driver, url)
+    print("  Download images..      ", end="\r")
 
-        imageDownloadTryCount = 0
-        images, chapter, seed = getImageList(driver, url)
-        print("  Download images..      ", end="\r")
+    if len(images) == 0:
+      print("  이미지를 찾을 수 없습니다. 패스")
+      continue
+    imagesDownload(title, savePath, images, chapter, seed)
 
-        if len(images) == 0:
-            print("  이미지를 찾을 수 없습니다. 패스")
-            continue
-        imagesDownload(title, savePath, images, chapter, seed)
+    # 최근 받은 파일을 JSON으로 저장하기
+    json = {
+        'author': author,
+        'skip': num-1,
+        'title': title,
+        'public_type': public_type,
+        'tags': tags,
+        'id': mangaId
+    }
+    saveJsonFile(os.path.join(titlePath, "data.json"), json)
 
-        # 최근 받은 파일을 JSON으로 저장하기
-        json = {
-            'author': author,
-            'skip': num-1,
-            'title': title,
-            'public_type': public_type,
-            'tags': tags,
-            'id': mangaId
-        }
-        saveJsonFile(os.path.join(titlePath, "data.json"), json)
-    print("[*] Download Complete")
+  # 완결인 책자를 별도로 저장해 준다.
+  if public_type == "완결" or public_type == "단편":
+    print("#"*80)
+    print("#"*2 + "완결: " + title)
+    print("#"*80)
+    title = pathName(title)
+    tar = os.path.join("complete", title)
+    pathlib.Path(os.path.join("complete")).mkdir(parents=True, exist_ok=True)
+    shutil.move(titlePath, tar)
+    shutil.rmtree(titlePath, ignore_errors=True)
+
+  print("[*] Download Complete")
 
 
 def parseImages(driver):
-    html = driver.page_source
+  html = driver.page_source
 
-    chapter = 0
-    seed = 0
+  chapter = 0
+  seed = 0
 
-    # 아래 문장이 없으면 로딩이 되지 않은 것임.
-    if "뷰어로 보기" not in html:
-        return [], chapter, seed, False
+  # 아래 문장이 없으면 로딩이 되지 않은 것임.
+  if "뷰어로 보기" not in html:
+    return [], chapter, seed, False
 
-    try:
-        cdnDomains = re.search(r'var\s+cdn_domains\s+=\s+(.*);', html).group(1)
-        domains = json.loads(cdnDomains)
-    except Exception:
-        return [], chapter, seed, False
+  try:
+    cdnDomains = re.search(r'var\s+cdn_domains\s+=\s+(.*);', html).group(1)
+    domains = json.loads(cdnDomains)
+  except Exception:
+    return [], chapter, seed, False
 
-    img_list = []
-    urls1 = []
-    urls2 = []
-    try:
-        strData = re.search(r'var\s+img_list\s+=\s+(.*);', html).group(1)
-        urls1 = json.loads(strData)
-        strData = re.search(r'var\s+img_list1\s+=\s+(.*);', html).group(1)
-        urls2 = json.loads(strData)
+  img_list = []
+  urls1 = []
+  urls2 = []
+  try:
+    strData = re.search(r'var\s+img_list\s+=\s+(.*);', html).group(1)
+    urls1 = json.loads(strData)
+    strData = re.search(r'var\s+img_list1\s+=\s+(.*);', html).group(1)
+    urls2 = json.loads(strData)
 
-        chapter = int(re.search(r'var\s+chapter\s+=\s+(.*);', html).group(1))
-        seed = int(re.search(r'var\s+view_cnt\s+=\s+(.*);', html).group(1))
-    except Exception:
-        return [], chapter, seed, False
+    chapter = int(re.search(r'var\s+chapter\s+=\s+(.*);', html).group(1))
+    seed = int(re.search(r'var\s+view_cnt\s+=\s+(.*);', html).group(1))
+  except Exception:
+    return [], chapter, seed, False
 
-    max = len(urls1)
-    if len(urls1) < len(urls2):
-        max = len(urls2)
+  max = len(urls1)
+  if len(urls1) < len(urls2):
+    max = len(urls2)
 
-    for i in range(max):
-        u = []
-        t = domains[(chapter + 4 * i) % len(domains)]
-        if (i < len(urls1)):
-            urls1[i] = urls1[i].replace("cdntigermask.xyz", t)
-            urls1[i] = urls1[i].replace("cdnmadmax.xyz", t)
-            urls1[i] = urls1[i].replace("filecdn.xyz", t)
-            u.append(urls1[i])
-        if (i < len(urls2)):
-            urls2[i] = urls2[i].replace("cdntigermask.xyz", t)
-            urls2[i] = urls2[i].replace("cdnmadmax.xyz", t)
-            urls2[i] = urls2[i].replace("filecdn.xyz", t)
-            u.append(urls2[i])
-        img_list.append(u)
+  for i in range(max):
+    u = []
+    t = domains[(chapter + 4 * i) % len(domains)]
+    if (i < len(urls1)):
+      urls1[i] = urls1[i].replace("cdntigermask.xyz", t)
+      urls1[i] = urls1[i].replace("cdnmadmax.xyz", t)
+      urls1[i] = urls1[i].replace("filecdn.xyz", t)
+      u.append(urls1[i])
+    if (i < len(urls2)):
+      urls2[i] = urls2[i].replace("cdntigermask.xyz", t)
+      urls2[i] = urls2[i].replace("cdnmadmax.xyz", t)
+      urls2[i] = urls2[i].replace("filecdn.xyz", t)
+      u.append(urls2[i])
+    img_list.append(u)
 
-    # print(image_urls)
-    # contents = []
-    # try:
-    #     contents = bs.find("div", {"class": "view-content"}).find_all("img")
-    # except Exception as e:
-    #     print(e)``
-    return img_list, chapter, seed, True
+  # print(image_urls)
+  # contents = []
+  # try:
+  #     contents = bs.find("div", {"class": "view-content"}).find_all("img")
+  # except Exception as e:
+  #     print(e)``
+  return img_list, chapter, seed, True
 
 
 def getImageList(driver, url):
-    global imageDownloadTryCount
-    imageDownloadTryCount = imageDownloadTryCount + 1
-    wait = WebDriverWait(driver, 30)
-    try:
-        driver.get(url)
-        wait.until(EC.visibility_of_element_located(
-            (By.CSS_SELECTOR, '.scroll-viewer')))
-        time.sleep(3)
-        driver.execute_script("window.stop();")
-    except Exception:
-        # reconnect(driver)
-        print('사이트 읽기 오류')
-        if imageDownloadTryCount > 2:
-            return [], 0, 0
-        return getImageList(driver, url)
+  global imageDownloadTryCount
+  imageDownloadTryCount = imageDownloadTryCount + 1
+  wait = WebDriverWait(driver, 30)
+  try:
+    driver.get(url)
+    wait.until(EC.visibility_of_element_located(
+        (By.CSS_SELECTOR, '.scroll-viewer')))
+    time.sleep(3)
+    driver.execute_script("window.stop();")
+  except Exception:
+    # reconnect(driver)
+    print('사이트 읽기 오류')
+    if imageDownloadTryCount > 2:
+      return [], 0, 0
+    return getImageList(driver, url)
 
+  contents, chapter, seed, loading = parseImages(driver)
+
+  # 로딩이 되지 않았으면... 다시 읽기
+  if loading == False:
+    if imageDownloadTryCount > 2:
+      return [], 0, 0
+    retry_wait(7, "[이미지목록] ")
     contents, chapter, seed, loading = parseImages(driver)
-
-    # 로딩이 되지 않았으면... 다시 읽기
+    # 시간이 지났는데도 로딩이 되지 않으면..
     if loading == False:
-        if imageDownloadTryCount > 2:
-            return [], 0, 0
-        retry_wait(7, "[이미지목록] ")
-        contents, chapter, seed, loading = parseImages(driver)
-        # 시간이 지났는데도 로딩이 되지 않으면..
-        if loading == False:
-            return getImageList(driver, url)
+      return getImageList(driver, url)
 
-    # 로딩이 되었지만, 데이터가 없으면 패스
-    if loading == True and len(contents) == 0:
-        return [], 0, 0
+  # 로딩이 되었지만, 데이터가 없으면 패스
+  if loading == True and len(contents) == 0:
+    return [], 0, 0
 
-    return contents, chapter, seed
+  return contents, chapter, seed

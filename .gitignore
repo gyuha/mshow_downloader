@@ -5,6 +5,7 @@ temp
 env
 venv
 download
+complete
 연재
 완결
 *.pyc
