@@ -1,6 +1,4 @@
 import shutil
-from moveComplete import moveToCompleteFolder
-from bs4 import BeautifulSoup
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
@@ -89,6 +87,8 @@ def comicsDownload(driver, mangaId, downloadFolder):
     title = pathName(title)
     tar = os.path.join("complete", title)
     pathlib.Path(os.path.join("complete")).mkdir(parents=True, exist_ok=True)
+    if os.path.exists(tar):
+      shutil.rmtree(tar, ignore_errors=True)
     shutil.move(titlePath, tar)
     shutil.rmtree(titlePath, ignore_errors=True)
 

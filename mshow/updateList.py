@@ -105,3 +105,15 @@ def getUpdateList(driver, updateSize=3):
     num = num + 1
     print("   %d. %s" % (num, l))
   return updateList
+
+
+def checkAllDownload():
+  folderList = os.listdir("download")
+  updateList = []
+  for downloaded in folderList:
+    data = loadJsonFile(os.path.join("download", downloaded, "data.json"))
+    if not data:
+      continue
+    if "id" in data:
+      updateList.append(data["id"])
+  return updateList
