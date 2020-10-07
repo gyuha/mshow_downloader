@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from mshow.imagesDownload import pathName
 from mshow.driver import retry_wait, reconnect
 
-base_url = "/bbs/page.php?hid=manga_detail&manga_id="
+base_url = "/comics/"
 
 
 def parseChaterList(driver):

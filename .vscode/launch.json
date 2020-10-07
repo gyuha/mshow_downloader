@@ -29,29 +29,29 @@
             "name": "Python: main [download by comic list]",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/mangashowme.py",
+            "program": "${workspaceFolder}/manatoki.py",
             "console": "integratedTerminal",
             "args": [
                 "-d",
-                "download.txt"
+                "list.txt"
             ]
         },
         {
             "name": "Python: main [single download]",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/mangashowme.py",
+            "program": "${workspaceFolder}/manatoki.py",
             "console": "integratedTerminal",
             "args": [
                 "-c",
-                "default.ini"
+                "manatoki.ini"
             ]
         },
         {
             "name": "Python: main [update]",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/mangashowme.py",
+            "program": "${workspaceFolder}/manatoki.py",
             "console": "integratedTerminal",
             "args": [
                 "-u",
@@ -63,7 +63,7 @@
             "name": "Python: main [list]",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/mangashowme.py",
+            "program": "${workspaceFolder}/manatoki.py",
             "console": "integratedTerminal",
             "args": [
                 "-d",
