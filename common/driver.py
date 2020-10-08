@@ -1,27 +1,28 @@
 import platform
-import time
 import sys
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-from selenium.webdriver.chrome.options import Options
+import time
+import os
+
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 
 def driver_init():
-  print("Chrome Driver loading...", end="\r")
-  capa = DesiredCapabilities.CHROME
-  capa["pageLoadStrategy"] = "none"
+  # print("Chrome Driver loading...", end="\r")
+  # capa = DesiredCapabilities.CHROME
+  # capa["pageLoadStrategy"] = "none"
 
-  chrome_options = Options()
-  # chrome_options.add_argument("--headless")
-  chrome_options.add_argument("--log-level=3")
-  chrome_options.add_argument('--disable-gpu')
-  chrome_options.add_argument("--window-size=%s" % "800,600")
-  dirver_file = './chromedriver.exe'
-  if platform.system() == 'Linux':
-    dirver_file = './chromedriver'
-  driver = webdriver.Chrome(executable_path=dirver_file,
-                            chrome_options=chrome_options,
-                            desired_capabilities=capa)
+  # chrome_options = Options()
+  # # chrome_options.add_argument("--headless")
+  # chrome_options.add_argument("--log-level=3")
+  # chrome_options.add_argument('--disable-gpu')
+  # chrome_options.add_argument("--window-size=%s" % "800,600")
+  # dirver_file = './chromedriver.exe'
+  # if platform.system() == 'Linux':
+  #   dirver_file = './chromedriver'
+  base_path = os.path.abspath(".")
+  driver = webdriver.PhantomJS(base_path + '\\phantomjs.exe')
   driver.implicitly_wait(5)
 
   return driver

@@ -1,17 +1,19 @@
-import shutil
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.common.by import By
-from manatoki.chapters import chapterListParser
-from manatoki.config import Config
-from common.dataSave import saveJsonFile, loadJsonFile
-from common.driver import retry_wait, reconnect
-from common.imagesDownload import imagesDownload, pathName
-import json
 import os
 import pathlib
-import re
+import shutil
 import time
+
+from bs4 import BeautifulSoup
+from common.dataSave import loadJsonFile, saveJsonFile
+from common.driver import reconnect, retry_wait
+from common.imagesDownload import imagesDownload, pathName
+
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+
+from manatoki.chapters import chapterListParser
+from manatoki.config import Config
 
 BASE_URL = '/comic/'
 imageDownloadTryCount = 0
@@ -98,53 +100,75 @@ def comicsDownload(driver, mangaId, downloadFolder):
 def parseImages(driver):
   html = driver.find_elements_by_class_name("view-padding")[1]
   # html = driver.find_element_by_xpath("/html/body")
-  print(html.get_attribute("innerHTML"))
+  # print(html.get_attribute("outerHTML"))
+  div = html.get_attribute("outerHTML")
+  bs = BeautifulSoup(div, "html.parser")
+  images = bs.find_all("img")
+  # print(images)
+
+  source = driver.page_source
 
   chapter = 0
   seed = 0
 
   # 아래 문장이 없으면 로딩이 되지 않은 것임.
-  if "뷰어로 보기" not in html:
-    return [], chapter, seed, False
-
-  try:
-    cdnDomains = re.search(r'var\s+cdn_domains\s+=\s+(.*);', html).group(1)
-    domains = json.loads(cdnDomains)
-  except Exception:
+  if "뷰어로 보기" not in source or len(images) == 0:
     return [], chapter, seed, False
 
   img_list = []
-  urls1 = []
-  urls2 = []
-  try:
-    strData = re.search(r'var\s+img_list\s+=\s+(.*);', html).group(1)
-    urls1 = json.loads(strData)
-    strData = re.search(r'var\s+img_list1\s+=\s+(.*);', html).group(1)
-    urls2 = json.loads(strData)
 
-    chapter = int(re.search(r'var\s+chapter\s+=\s+(.*);', html).group(1))
-    seed = int(re.search(r'var\s+view_cnt\s+=\s+(.*);', html).group(1))
-  except Exception:
-    return [], chapter, seed, False
+  keys = images[0].attrs.keys()
 
-  max = len(urls1)
-  if len(urls1) < len(urls2):
-    max = len(urls2)
+  attr = ''
 
-  for i in range(max):
-    u = []
-    t = domains[(chapter + 4 * i) % len(domains)]
-    if (i < len(urls1)):
-      urls1[i] = urls1[i].replace("cdntigermask.xyz", t)
-      urls1[i] = urls1[i].replace("cdnmadmax.xyz", t)
-      urls1[i] = urls1[i].replace("filecdn.xyz", t)
-      u.append(urls1[i])
-    if (i < len(urls2)):
-      urls2[i] = urls2[i].replace("cdntigermask.xyz", t)
-      urls2[i] = urls2[i].replace("cdnmadmax.xyz", t)
-      urls2[i] = urls2[i].replace("filecdn.xyz", t)
-      u.append(urls2[i])
-    img_list.append(u)
+  for key in keys:
+    if "data" in key:
+      attr = key
+
+  for img in images:
+    img_list.append(img.get(attr))
+    # print(img.get('src'))
+    # url = img.search(r"\"(https.*g)\"").group(1)
+    # print(url)
+    # print(img)
+
+  # try:
+  #   cdnDomains = re.search(r'var\s+cdn_domains\s+=\s+(.*);', html).group(1)
+  #   domains = json.loads(cdnDomains)
+  # except Exception:
+  #   return [], chapter, seed, False
+
+  # urls1 = []
+  # urls2 = []
+  # try:
+  #   strData = re.search(r'var\s+img_list\s+=\s+(.*);', html).group(1)
+  #   urls1 = json.loads(strData)
+  #   strData = re.search(r'var\s+img_list1\s+=\s+(.*);', html).group(1)
+  #   urls2 = json.loads(strData)
+
+  #   chapter = int(re.search(r'var\s+chapter\s+=\s+(.*);', html).group(1))
+  #   seed = int(re.search(r'var\s+view_cnt\s+=\s+(.*);', html).group(1))
+  # except Exception:
+  #   return [], chapter, seed, False
+
+  # max = len(urls1)
+  # if len(urls1) < len(urls2):
+  #   max = len(urls2)
+
+  # for i in range(max):
+  #   u = []
+  #   t = domains[(chapter + 4 * i) % len(domains)]
+  #   if (i < len(urls1)):
+  #     urls1[i] = urls1[i].replace("cdntigermask.xyz", t)
+  #     urls1[i] = urls1[i].replace("cdnmadmax.xyz", t)
+  #     urls1[i] = urls1[i].replace("filecdn.xyz", t)
+  #     u.append(urls1[i])
+  #   if (i < len(urls2)):
+  #     urls2[i] = urls2[i].replace("cdntigermask.xyz", t)
+  #     urls2[i] = urls2[i].replace("cdnmadmax.xyz", t)
+  #     urls2[i] = urls2[i].replace("filecdn.xyz", t)
+  #     u.append(urls2[i])
+  #   img_list.append(u)
 
   # print(image_urls)
   # contents = []
@@ -163,7 +187,7 @@ def getImageList(driver, url):
     driver.get(url)
     wait.until(EC.visibility_of_element_located(
         (By.CSS_SELECTOR, '.comic-navbar')))
-    time.sleep(3)
+    time.sleep(1)
     driver.execute_script("window.stop();")
   except Exception:
     # reconnect(driver)

@@ -1,15 +1,15 @@
-import sys
 import getopt
 import multiprocessing
-
 import os
+import sys
 
-from manatoki.config import Config
-from manatoki.chapterParser import comicsDownload
-from common.driver import driver_init, driver_close
-from mshow.updateList import checkAllDownload, getUpdateList
 from common.downloadList import downloadList
-from mshow.comicsList import getComicsList
+from common.driver import driver_close, driver_init
+
+from manatoki.chapterParser import comicsDownload
+from manatoki.config import Config
+# from manatoki.comicsList import getComicsList
+# from manatoki.updateList import checkAllDownload, getUpdateList
 
 
 def usage():
@@ -90,21 +90,21 @@ if __name__ == '__main__':
 
   isUpdate, isUpdateAll, updateSize, downloadFile, listSize = arguments()
 
-  if int(listSize) > 0:
-    getComicsList(int(listSize))
-    exit(1)
+  # if int(listSize) > 0:
+  #   getComicsList(int(listSize))
+  #   exit(1)
 
   driver = None
 
   if isUpdate:
     # 업데이트 일 경우
     driver = driver_init()
-    updatedList = getUpdateList(driver, updateSize)
-    multipleDownload(driver, updatedList)
+    # updatedList = getUpdateList(driver, updateSize)
+    # multipleDownload(driver, updatedList)
   if isUpdateAll:
     driver = driver_init()
-    updatedList = checkAllDownload()
-    multipleDownload(driver, updatedList)
+    # updatedList = checkAllDownload()
+    # multipleDownload(driver, updatedList)
   elif downloadFile != "":
     # 파일에서 다운로드 목록 확인
     driver = driver_init()
