@@ -19,6 +19,7 @@ def addClipToText(str):
   a = clip.split('/')
   last = a[len(a) - 1].split('?')
   id = last[0]
+  print("ID : " + id)
   f = open("list.txt", "a")
   f.write(id + "\r")
   f.close()
