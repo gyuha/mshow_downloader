@@ -13,16 +13,17 @@ def driver_init():
   # capa = DesiredCapabilities.CHROME
   # capa["pageLoadStrategy"] = "none"
 
-  # chrome_options = Options()
-  # # chrome_options.add_argument("--headless")
-  # chrome_options.add_argument("--log-level=3")
-  # chrome_options.add_argument('--disable-gpu')
+  chrome_options = Options()
+  chrome_options.add_argument("--headless")
+  chrome_options.add_argument("--log-level=3")
+  chrome_options.add_argument('--disable-gpu')
   # chrome_options.add_argument("--window-size=%s" % "800,600")
-  # dirver_file = './chromedriver.exe'
-  # if platform.system() == 'Linux':
-  #   dirver_file = './chromedriver'
-  base_path = os.path.abspath(".")
-  driver = webdriver.PhantomJS(base_path + '\\phantomjs.exe')
+  driver_file = './chromedriver.exe'
+  if platform.system() == 'Linux':
+    driver_file = './chromedriver'
+  driver = webdriver.Chrome(driver_file, chrome_options=chrome_options)
+  # base_path = os.path.abspath(dir)
+  # driver = webdriver.PhantomJS(base_path + '\\phantomjs.exe')
   driver.implicitly_wait(5)
 
   return driver

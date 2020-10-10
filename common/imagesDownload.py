@@ -28,12 +28,14 @@ def pathName(path):
       '/', '').replace('!', '').replace('\\', '')
   path = path.replace("「", " ").replace("」", '').replace(".", "")
   path = path.replace("<", "").replace(">", "")
+  path = path.replace("\"", "")
 
   path = path.strip()
   return path
 
 
 def imagesDownload(title, savePath, images, chapter, seed):
+  title = pathName(title)
   pathlib.Path(savePath).mkdir(parents=True, exist_ok=True)
   target = []
   # c = Config()

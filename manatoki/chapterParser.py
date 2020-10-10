@@ -24,8 +24,8 @@ def saveFolderPath(titlePath, num):
   return path
 
 
-# 만화책에서 이미지 목록을 가져 와서 다운로드 하기
 def comicsDownload(driver, mangaId, downloadFolder):
+  # 만화책에서 이미지 목록을 가져 와서 다운로드 하기
   chaterList, public_type, tags, author, title = chapterListParser(
       driver, mangaId)
   global imageDownloadTryCount
@@ -68,7 +68,7 @@ def comicsDownload(driver, mangaId, downloadFolder):
     if len(images) == 0:
       print("  이미지를 찾을 수 없습니다. 패스")
       continue
-    imagesDownload(title, savePath, images, chapter, seed)
+    imagesDownload(d["title"], savePath, images, chapter, seed)
 
     # 최근 받은 파일을 JSON으로 저장하기
     json = {

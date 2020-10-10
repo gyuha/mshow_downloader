@@ -8,6 +8,7 @@ from common.driver import driver_close, driver_init
 
 from manatoki.chapterParser import comicsDownload
 from manatoki.config import Config
+
 # from manatoki.comicsList import getComicsList
 # from manatoki.updateList import checkAllDownload, getUpdateList
 

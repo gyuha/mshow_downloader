@@ -21,6 +21,9 @@ def parseChaterList(driver):
   try:
     chapterList = bs.find(
         "div", {"class": "serial-list"}).find_all("a", {"class": "item-subject"}, limit=None)
+    for cap in chapterList:
+      for span in cap.find_all("span"):
+        span.decompose()
   except Exception as e:
     print(e)
   # print(chapterList)
@@ -72,10 +75,9 @@ def publishTitle(bs):
     return ""
   return title
 
-# 만화의 챕터 목록 가져 오기
-
 
 def chapterListParser(driver, mangaId):
+  # 만화의 챕터 목록 가져 오기
   c = Config()
   url = c.getDomain() + base_url + mangaId
   publish_type = ""

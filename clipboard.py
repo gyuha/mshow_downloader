@@ -1,3 +1,5 @@
+import os
+from manatoki.config import Config
 from tkinter import Tk, Label, RAISED
 import pyperclip
 from urllib.parse import urlparse, parse_qs
@@ -9,12 +11,16 @@ def addClipToText(str):
   global clip
   if (clip == str):
     return
-  if "manamoa" not in str and "manga_id" not in str:
+  config = Config()
+  if config.getDomain() not in str:
     return
   clip = str
-  q = parse_qs(urlparse(str).query).get('manga_id')
+  # q = parse_qs(urlparse(str).query).get('manga_id')
+  a = clip.split('/')
+  last = a[len(a) - 1].split('?')
+  id = last[0]
   f = open("list.txt", "a")
-  f.write(q[0] + "\r")
+  f.write(id + "\r")
   f.close()
 
 
@@ -42,11 +48,20 @@ def onClick(labelElem):
   pyperclip.copy(labelText)
 
 
+def loadConfig():
+  defaultIni = "manatoki.ini"
+  if os.path.exists(defaultIni):
+    config = Config()
+    config.loadConfig(defaultIni)
+    print(config.getDomain())
+
+
 if __name__ == '__main__':
   root = Tk()
   label = Label(root, text="", cursor="plus",
                 relief=RAISED, pady=5,  wraplength=500)
   label.bind("<Button-1>", lambda event, labelElem=label: onClick(labelElem))
   label.pack()
+  loadConfig()
   updateClipboard()
   root.mainloop()
