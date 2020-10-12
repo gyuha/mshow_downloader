@@ -1,4 +1,5 @@
 import getopt
+from manatoki.updateList import getUpdateList
 import multiprocessing
 import os
 import sys
@@ -54,12 +55,12 @@ def arguments():
     if opt in ("-h", "--help"):
       usage()
       sys.exit()
-    # elif opt in ("-u", "--update"):
-    #   isUpdate = True
-    # elif opt in ("-a", "--all"):
-    #   isUpdateAll = True
-    # elif opt in ("-s", "--size"):
-    #   updateSize = int(arg)
+    elif opt in ("-u", "--update"):
+      isUpdate = True
+    elif opt in ("-a", "--all"):
+      isUpdateAll = True
+    elif opt in ("-s", "--size"):
+      updateSize = int(arg)
     elif opt in ("-d", "--download"):
       downloadFile = arg
     elif opt in ("-l", "--list"):
@@ -96,13 +97,14 @@ if __name__ == '__main__':
   #   exit(1)
 
   driver = None
+  config = Config()
 
   if isUpdate:
     # 업데이트 일 경우
     driver = driver_init()
-    # updatedList = getUpdateList(driver, updateSize)
-    # multipleDownload(driver, updatedList)
-  if isUpdateAll:
+    updatedList = getUpdateList(driver, updateSize)
+    multipleDownload(driver, updatedList)
+  elif isUpdateAll:
     driver = driver_init()
     # updatedList = checkAllDownload()
     # multipleDownload(driver, updatedList)
@@ -113,7 +115,6 @@ if __name__ == '__main__':
     multipleDownload(driver, downList)
   else:
     # 그냥 하나씩 다운로드
-    config = Config()
     print(config.getDomain() +
           "/comic/[xxxx]")
     mangaId = input("[*] 책 아이디 : ")
