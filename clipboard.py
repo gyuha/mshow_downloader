@@ -11,8 +11,8 @@ def addClipToText(str):
   global clip
   if (clip == str):
     return
-  config = Config()
-  if config.getDomain() not in str:
+  # config = Config()
+  if 'manatoki' not in str:
     return
   clip = str
   # q = parse_qs(urlparse(str).query).get('manga_id')

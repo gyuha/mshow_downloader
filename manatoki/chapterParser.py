@@ -103,8 +103,9 @@ def parseImages(driver):
   # print(html.get_attribute("outerHTML"))
   div = html.get_attribute("outerHTML")
   bs = BeautifulSoup(div, "html.parser")
-  images = bs.find_all("img")
-  # print(images)
+  images = bs.select('div > div > img')
+  if (len(images) == 0):
+    images = bs.select('div >div > p >img')
 
   source = driver.page_source
 
