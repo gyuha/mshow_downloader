@@ -58,7 +58,7 @@ def imagesDownload(title, savePath, images, chapter, seed):
   print(" "*80, end="\r")
   if int(seed) > 0:
     convertImages(savePath, chapter, seed)
-  imagesCompress(savePath)
+  # imagesCompress(savePath)
 
   __zipFolder(savePath + "-" + pathName(title) + ".cbz", savePath)
   shutil.rmtree(savePath, ignore_errors=True)
@@ -90,5 +90,6 @@ def __downloadFromUrl(p):
     with open(outputPath, 'wb') as f:
       for chunk in r.content(chunk_size=4096):
         f.write(chunk)
+      f.close()
   except:
     return
