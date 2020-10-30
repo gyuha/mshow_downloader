@@ -112,6 +112,9 @@ def parseImages(driver):
       if images[i].parent.has_attr('class'):
         del images[i]
 
+  if (len(images) == 0):
+    images = bs.select('div > ul img')
+
   # images = bs.select('div > div > img')
   # if (len(images) == 0):
   #   images = bs.select('div > div > p >img')
