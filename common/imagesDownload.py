@@ -58,7 +58,7 @@ def imagesDownload(title, savePath, images, chapter, seed):
   print(" "*80, end="\r")
   if int(seed) > 0:
     convertImages(savePath, chapter, seed)
-  imagesCompress(savePath)
+  # imagesCompress(savePath)
 
   __zipFolder(savePath + "-" + pathName(title) + ".cbz", savePath)
   shutil.rmtree(savePath, ignore_errors=True)
@@ -82,19 +82,14 @@ def __downloadFromUrl(p):
   try:
     requests.urllib3.disable_warnings()
     s = requests.Session()
-    s.headers.update({'User-Agent': CUSTOM_USER_AGENT})
+    s.headers.update({'Connection': 'keep-alive',
+                      'User-Agent': CUSTOM_USER_AGENT})
     r = s.get(url, stream=True, verify=False)
     # if (r.status_code == 404):
     #   r = s.get(url[0].replace('img.', 's3.'), stream=True, verify=False)
-    # if (r.status_code == 404):
-    #   r = s.get(url[0].replace('cdnwowmax', 's3.cdnwowmax'),
-    #             stream=True, verify=False)
-    # if (r.status_code == 404 and len(url) == 2):
-    #   r = s.get(url[1], stream=True, verify=False)
-    # if (r.status_code == 404 and len(url) == 2):
-    #   r = s.get(url[1].replace('img.', 's3.'), stream=True, verify=False)
     with open(outputPath, 'wb') as f:
-      for chunk in r.iter_content(chunk_size=4096):
+      for chunk in r.content(chunk_size=4096):
         f.write(chunk)
+      f.close()
   except:
     return
