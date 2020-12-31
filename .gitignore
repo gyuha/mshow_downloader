@@ -19,6 +19,7 @@ comics.txt
 *.jpg
 *.ipynb
 *.log
+*.pyo
 output
 
 \[완결\]
