@@ -1,0 +1,1 @@
+mangashowme.exe -a

@@ -98,13 +98,30 @@ def comicsDownload(driver, mangaId, downloadFolder):
 
 
 def parseImages(driver):
+  time.sleep(3)
   html = driver.find_elements_by_class_name("view-padding")[1]
   # html = driver.find_element_by_xpath("/html/body")
   # print(html.get_attribute("outerHTML"))
   div = html.get_attribute("outerHTML")
   bs = BeautifulSoup(div, "html.parser")
-  images = bs.find_all("img")
-  # print(images)
+
+  images = bs.select('div > div > img')
+  if (len(images) == 0):
+    images = bs.select('div > div > p >img')
+    for i in reversed(range(len(images))):
+      if images[i].parent.has_attr('class'):
+        del images[i]
+
+  if (len(images) == 0):
+    images = bs.select('div > ul img')
+
+  # images = bs.select('div > div > img')
+  # if (len(images) == 0):
+  #   images = bs.select('div > div > p >img')
+
+  # for i in reversed(range(len(images))):
+  #   if images[i].has_attr('style'):
+  #     del images[i]
 
   source = driver.page_source
 
@@ -117,16 +134,13 @@ def parseImages(driver):
 
   img_list = []
 
-  keys = images[0].attrs.keys()
-
-  attr = ''
-
-  for key in keys:
-    if "data" in key:
-      attr = key
-
   for img in images:
-    img_list.append(img.get(attr))
+    keys = img.attrs.keys()
+    attr = ''
+    for key in keys:
+      if "data" in key:
+        attr = key
+        img_list.append(img.get(attr))
     # print(img.get('src'))
     # url = img.search(r"\"(https.*g)\"").group(1)
     # print(url)
