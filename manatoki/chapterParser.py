@@ -4,6 +4,7 @@ import shutil
 import time
 
 from bs4 import BeautifulSoup
+from common import driver
 from common.dataSave import loadJsonFile, saveJsonFile
 from common.driver import reconnect, retry_wait
 from common.imagesDownload import imagesDownload, pathName
@@ -65,6 +66,7 @@ def comicsDownload(driver, mangaId, downloadFolder):
     images, chapter, seed = getImageList(driver, url)
     print("  Download images..      ", end="\r")
 
+    print(images)
     if len(images) == 0:
       print("  이미지를 찾을 수 없습니다. 패스")
       continue
@@ -98,8 +100,12 @@ def comicsDownload(driver, mangaId, downloadFolder):
 
 
 def parseImages(driver):
-  time.sleep(3)
+  time.sleep(1)
   html = driver.find_elements_by_class_name("view-padding")[1]
+
+  if not html:
+    parseImages(driver)
+    return
   # html = driver.find_element_by_xpath("/html/body")
   # print(html.get_attribute("outerHTML"))
   div = html.get_attribute("outerHTML")

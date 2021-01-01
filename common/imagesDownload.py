@@ -1,22 +1,24 @@
-from bs4 import BeautifulSoup
-from mshow.imageConverter import convertImages
-from mshow.imageCompress import imagesCompress
-from multiprocessing import Pool, cpu_count
-from os.path import basename
-from mshow.config import Config
 import os
 import pathlib
 import re
-import requests
 import shutil
 import sys
 import time
-import tqdm
+import urllib.request
 import zipfile
 from datetime import date
+from multiprocessing import Pool, cpu_count
+from os.path import basename
 
-CUSTOM_USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 \
-(KHTML, like Gecko) Chrome/40.0.2214.91 Safari/537.36'
+import requests
+import tqdm
+import wget
+from bs4 import BeautifulSoup
+from mshow.config import Config
+from mshow.imageCompress import imagesCompress
+from mshow.imageConverter import convertImages
+
+CUSTOM_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36'
 
 
 def pathName(path):
@@ -56,8 +58,8 @@ def imagesDownload(title, savePath, images, chapter, seed):
     pool.join()
 
   print(" "*80, end="\r")
-  if int(seed) > 0:
-    convertImages(savePath, chapter, seed)
+  # if int(seed) > 0:
+  #   convertImages(savePath, chapter, seed)
   # imagesCompress(savePath)
 
   __zipFolder(savePath + "-" + pathName(title) + ".cbz", savePath)
@@ -80,16 +82,21 @@ def __downloadFromUrl(p):
   outputPath = os.path.join(outputPath, name)
 
   try:
-    requests.urllib3.disable_warnings()
-    s = requests.Session()
-    s.headers.update({'Connection': 'keep-alive',
-                      'User-Agent': CUSTOM_USER_AGENT})
-    r = s.get(url, stream=True, verify=False)
-    # if (r.status_code == 404):
-    #   r = s.get(url[0].replace('img.', 's3.'), stream=True, verify=False)
-    with open(outputPath, 'wb') as f:
-      for chunk in r.content(chunk_size=4096):
-        f.write(chunk)
-      f.close()
+    req = urllib.request.Request(
+        url, headers={'User-Agent': CUSTOM_USER_AGENT})
+    with open(outputPath, "wb") as f:
+      with urllib.request.urlopen(req) as r:
+        f.write(r.read())
+
+    # urllib.request.urlretrieve(url, "D:/abc/image/local-filename.jpg")
+    # requests.urllib3.disable_warnings()
+    # s = requests.Session()
+    # s.headers.update({'Connection': 'keep-alive',
+    #                   'User-Agent': CUSTOM_USER_AGENT})
+    # r = s.get(url, stream=True, verify=False)
+    # with open(outputPath, 'wb') as f:
+    #   for chunk in r.content(chunk_size=4096):
+    #     f.write(chunk)
+    #   f.close()
   except:
     return
