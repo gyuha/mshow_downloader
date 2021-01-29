@@ -78,6 +78,11 @@ Or
 pyinstaller -y -F "mangashowme.py"
 ```
 
+# Update all package
+```
+pip freeze | %{$_.split('==')[0]} | %{pip install --upgrade $_}
+```
+
 ## 참고
 
 - [문과생도 할 수 있는 웹 크롤링 (1) - 웹 데이터 크롤링 준비](http://sacko.tistory.com/12)

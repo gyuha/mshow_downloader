@@ -1,1 +1,0 @@
-mangashowme.exe -d list2.txt

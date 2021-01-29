@@ -66,7 +66,6 @@ def comicsDownload(driver, mangaId, downloadFolder):
     images, chapter, seed = getImageList(driver, url)
     print("  Download images..      ", end="\r")
 
-    print(images)
     if len(images) == 0:
       print("  이미지를 찾을 수 없습니다. 패스")
       continue
