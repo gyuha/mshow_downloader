@@ -1,11 +1,13 @@
 import time
+
+from bs4 import BeautifulSoup
+from common.driver import reconnect, retry_wait
+from common.imagesDownload import pathName
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.common.by import By
+
 from manatoki.config import Config
-from bs4 import BeautifulSoup
-from common.imagesDownload import pathName
-from common.driver import retry_wait, reconnect
 
 base_url = "/comic/"
 
