@@ -113,8 +113,17 @@ def parseImages(driver):
 
     images = bs.select('div img')
     for i in reversed(range(len(images))):
-        if images[i].parent.has_attr('class'):
-            del images[i]
+        if images[i].has_attr('style'):
+            if images[i].attrs["style"].find("block"):
+                continue
+        if images[i].has_attr('class'):
+            if "txc-image" in images[i].attrs["class"]:
+                continue
+        del images[i]
+        # if images[i].attrs["style"].strip() != "display: block;":
+        #     del images[i]
+        # if images[i].parent.has_attr('class'):
+        #     del images[i]
 
     # images = bs.select('div > div > img')
     # if (len(images) <= 4):
