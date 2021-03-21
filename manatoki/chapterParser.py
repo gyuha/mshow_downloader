@@ -1,5 +1,6 @@
 import os
 import pathlib
+import re
 import shutil
 import time
 
@@ -100,45 +101,23 @@ def comicsDownload(driver, mangaId, downloadFolder):
 
 
 def parseImages(driver):
-    time.sleep(1)
-    html = driver.find_elements_by_class_name("view-padding")[1]
+    time.sleep(0.5)
+    view = driver.find_elements_by_class_name("view-padding")[1]
 
-    if not html:
-        parseImages(driver)
-        return
-    # html = driver.find_element_by_xpath("/html/body")
-    # print(html.get_attribute("outerHTML"))
-    div = html.get_attribute("outerHTML")
-    bs = BeautifulSoup(div, "html.parser")
+    imgs = view.find_elements_by_tag_name("img")
 
-    images = bs.select('div img')
-    for i in reversed(range(len(images))):
-        if images[i].has_attr('style'):
-            if images[i].attrs["style"].find("block"):
-                continue
-        if images[i].has_attr('class'):
-            if "txc-image" in images[i].attrs["class"]:
-                continue
-        del images[i]
-        # if images[i].attrs["style"].strip() != "display: block;":
-        #     del images[i]
-        # if images[i].parent.has_attr('class'):
-        #     del images[i]
+    for i in reversed(range(len(imgs))):
+        if not imgs[i].is_displayed():
+            # 보이지 않는 이미지는 제거
+            del imgs[i]
 
-    # images = bs.select('div > div > img')
-    # if (len(images) <= 4):
-    #     images = images + bs.select('div > div > p >img')
+    img_list = []
 
-    # if (len(images) == 0):
-    #     images = images + bs.select('div > ul img')
-
-    # images = bs.select('div > div > img')
-    # if (len(images) == 0):
-    #   images = bs.select('div > div > p >img')
-
-    # for i in reversed(range(len(images))):
-    #   if images[i].has_attr('style'):
-    #     del images[i]
+    imageRe = re.compile("data-.*=\"(.*\.\w{3,4})\"")
+    for img in imgs:
+        imgTag = img.get_attribute('outerHTML')
+        if imageRe.search(imgTag) != None:
+            img_list.append(imageRe.search(imgTag).group(1))
 
     source = driver.page_source
 
@@ -146,67 +125,9 @@ def parseImages(driver):
     seed = 0
 
     # 아래 문장이 없으면 로딩이 되지 않은 것임.
-    if "뷰어로 보기" not in source or len(images) == 0:
+    if "뷰어로 보기" not in source or len(img_list) == 0:
         return [], chapter, seed, False
 
-    img_list = []
-
-    for img in images:
-        keys = img.attrs.keys()
-        attr = ''
-        for key in keys:
-            if "data" in key:
-                attr = key
-                img_list.append(img.get(attr))
-        # print(img.get('src'))
-        # url = img.search(r"\"(https.*g)\"").group(1)
-        # print(url)
-        # print(img)
-
-    # try:
-    #   cdnDomains = re.search(r'var\s+cdn_domains\s+=\s+(.*);', html).group(1)
-    #   domains = json.loads(cdnDomains)
-    # except Exception:
-    #   return [], chapter, seed, False
-
-    # urls1 = []
-    # urls2 = []
-    # try:
-    #   strData = re.search(r'var\s+img_list\s+=\s+(.*);', html).group(1)
-    #   urls1 = json.loads(strData)
-    #   strData = re.search(r'var\s+img_list1\s+=\s+(.*);', html).group(1)
-    #   urls2 = json.loads(strData)
-
-    #   chapter = int(re.search(r'var\s+chapter\s+=\s+(.*);', html).group(1))
-    #   seed = int(re.search(r'var\s+view_cnt\s+=\s+(.*);', html).group(1))
-    # except Exception:
-    #   return [], chapter, seed, False
-
-    # max = len(urls1)
-    # if len(urls1) < len(urls2):
-    #   max = len(urls2)
-
-    # for i in range(max):
-    #   u = []
-    #   t = domains[(chapter + 4 * i) % len(domains)]
-    #   if (i < len(urls1)):
-    #     urls1[i] = urls1[i].replace("cdntigermask.xyz", t)
-    #     urls1[i] = urls1[i].replace("cdnmadmax.xyz", t)
-    #     urls1[i] = urls1[i].replace("filecdn.xyz", t)
-    #     u.append(urls1[i])
-    #   if (i < len(urls2)):
-    #     urls2[i] = urls2[i].replace("cdntigermask.xyz", t)
-    #     urls2[i] = urls2[i].replace("cdnmadmax.xyz", t)
-    #     urls2[i] = urls2[i].replace("filecdn.xyz", t)
-    #     u.append(urls2[i])
-    #   img_list.append(u)
-
-    # print(image_urls)
-    # contents = []
-    # try:
-    #     contents = bs.find("div", {"class": "view-content"}).find_all("img")
-    # except Exception as e:
-    #     print(e)``
     return img_list, chapter, seed, True
 
 
@@ -218,7 +139,7 @@ def getImageList(driver, url):
         driver.get(url)
         wait.until(EC.visibility_of_element_located(
             (By.CSS_SELECTOR, '.comic-navbar')))
-        time.sleep(1)
+        time.sleep(0.5)
         driver.execute_script("window.stop();")
     except Exception:
         # reconnect(driver)
