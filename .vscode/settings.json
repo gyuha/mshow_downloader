@@ -1,5 +1,17 @@
 {
     "python.terminal.activateEnvironment": true,
     "python.pythonPath": "venv\\Scripts\\python.exe",
-    "python.linting.pylintEnabled": true
+    "python.linting.pylintEnabled": true,
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/*.meta": true,
+        "**/venv": true,
+        "**/build": true,
+        "**/__pycache__": true
+    },
+    "explorerExclude.backup": null
 }
