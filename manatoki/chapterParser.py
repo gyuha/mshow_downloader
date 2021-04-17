@@ -113,12 +113,15 @@ def parseImages(driver):
 
     img_list = []
 
-    imageRe = re.compile("data-.*=\"(.*\.\w{3,4})\"")
+    # imageRe = re.compile("data-.*=\"(.*\.\w{3,4})\"")
+    imageRe = re.compile(
+        "data-.*=\"(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+)\"")
     for img in imgs:
         imgTag = img.get_attribute('outerHTML')
         if imageRe.search(imgTag) != None:
             img_list.append(imageRe.search(imgTag).group(1))
 
+    print('📢[chapterParser.py:122]:', img_list)
     source = driver.page_source
 
     chapter = 0

@@ -15,7 +15,6 @@ def downloadList(filename):
 
 
 def saveListFile(filename, downloadList):
-    print('📢[downloadList.py:17]:', filename)
     filename = os.path.join(os.getcwd(), filename)
     with open(filename, "w", encoding="utf-8") as writeFile:
         for line in downloadList:
