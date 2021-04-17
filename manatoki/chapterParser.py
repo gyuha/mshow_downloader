@@ -121,7 +121,6 @@ def parseImages(driver):
         if imageRe.search(imgTag) != None:
             img_list.append(imageRe.search(imgTag).group(1))
 
-    print('📢[chapterParser.py:122]:', img_list)
     source = driver.page_source
 
     chapter = 0
