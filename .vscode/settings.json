@@ -16,5 +16,7 @@
     "explorerExclude.backup": null,
     "cSpell.words": [
         "imgs"
-    ]
+    ],
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4
 }

@@ -1,14 +1,15 @@
 import getopt
-from manatoki.updateList import getUpdateList
 import multiprocessing
 import os
 import sys
 
-from common.downloadList import downloadList, saveListFile
+from common.downloadList import (count_file_lines_and_first_line, downloadList,
+                                 save_update_list,
+                                 saveListFile)
 from common.driver import driver_close, driver_init
-
 from manatoki.chapterParser import comicsDownload
 from manatoki.config import Config
+from manatoki.updateList import getUpdateList
 
 # from manatoki.comicsList import getComicsList
 # from manatoki.updateList import checkAllDownload, getUpdateList
@@ -71,25 +72,22 @@ def arguments():
 # 한번에 여러개 받기
 
 
-def multipleDownload(driver, downList, listFileName=""):
+def multipleDownload(driver, listFileName=""):
     num = 0
-    saveList = downList
-    for title in downList:
-        num = num + 1
+    total_download = 0
+    while(1):
+        [count, id] = count_file_lines_and_first_line(listFileName)
+        if count == 0:
+            break
+        total_download = total_download + 1
         print(
-            "############# DOWNLOAD [%d/%d] ###############" % (num, len(downList)))
-        print(title)
+            "############# 다운로드 갯수 / 남은 갯수  [%d / %d] ###############" % (total_download, count))
+        print("ID : %s" % (id))
         config = Config()
-        comicsDownload(driver, title, config.getDownloadPath())
-        if listFileName != "":
-            saveList = saveList[1:]
-            saveListFile(listFileName, saveList)
+        comicsDownload(driver, id, config.getDownloadPath())
+        saveListFile(listFileName, id)
 
-    print("Downloaded.....")
-    num = 0
-    for title in downList:
-        num = num + 1
-        print("   %d. %s" % (num, title))
+    print("Done.....")
 
 
 if __name__ == '__main__':
@@ -108,7 +106,8 @@ if __name__ == '__main__':
         # 업데이트 일 경우
         driver = driver_init()
         updatedList = getUpdateList(driver, updateSize)
-        multipleDownload(driver, updatedList)
+        save_update_list(downloadFile, updatedList)
+        multipleDownload(driver, downloadFile)
     elif isUpdateAll:
         driver = driver_init()
         # updatedList = checkAllDownload()
@@ -116,8 +115,7 @@ if __name__ == '__main__':
     elif downloadFile != "":
         # 파일에서 다운로드 목록 확인
         driver = driver_init()
-        downList = downloadList(downloadFile)
-        multipleDownload(driver, downList, downloadFile)
+        multipleDownload(driver, downloadFile)
     else:
         # 그냥 하나씩 다운로드
         print(config.getDomain() +
