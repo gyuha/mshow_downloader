@@ -1,9 +1,8 @@
 import os
 
-# 파일에서 다운로드 목록 받아오기
-
 
 def downloadList(filename):
+  # 파일에서 다운로드 목록 받아오기
   print(filename)
   readList = []
   with open(filename, "r", encoding="utf-8-sig") as readFile:

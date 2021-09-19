@@ -1,7 +1,6 @@
 {
     "python.terminal.activateEnvironment": true,
     "python.pythonPath": "venv\\Scripts\\python.exe",
-    "python.linting.pylintEnabled": true,
     "files.exclude": {
         "**/.git": true,
         "**/.svn": true,
@@ -18,5 +17,14 @@
         "imgs"
     ],
     "editor.insertSpaces": true,
-    "editor.tabSize": 4
+    "editor.tabSize": 2,
+    "editor.formatOnSave": true,
+    "python.linting.pylintArgs": [
+        "--indent-string='  '"
+    ],
+    "python.formatting.autopep8Args": [
+        "--indent-size=2"
+    ],
+    "python.linting.pylintEnabled": true,
+    "python.formatting.provider": "autopep8"
 }

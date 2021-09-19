@@ -73,7 +73,7 @@ def __zipFolder(filename, path):
   zipf.close()
 
 
-def __downloadFromUrl(p):
+def __downloadFromUrl(p, trycount=0):
   url = p[0]
   outputPath = p[1]
   num = p[2]
@@ -85,7 +85,7 @@ def __downloadFromUrl(p):
     req = urllib.request.Request(
         url, headers={'User-Agent': CUSTOM_USER_AGENT})
     with open(outputPath, "wb") as f:
-      with urllib.request.urlopen(req) as r:
+      with urllib.request.urlopen(req, timeout=30) as r:
         f.write(r.read())
 
     # urllib.request.urlretrieve(url, "D:/abc/image/local-filename.jpg")
@@ -99,4 +99,7 @@ def __downloadFromUrl(p):
     #     f.write(chunk)
     #   f.close()
   except:
+    if trycount < 3:
+      print("    Retry: ", url)
+      __downloadFromUrl(p, trycount + 1)
     return

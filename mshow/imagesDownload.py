@@ -33,6 +33,21 @@ def pathName(path):
   return path
 
 
+def timed_loop(iterator, timeout):
+  start_time = time.time()
+  iterator = iter(iterator)
+
+  while True:
+    elapsed_time = time.time() - start_time
+    if elapsed_time > timeout:
+      raise TimeoutError("long_running_function took too long!")
+
+    try:
+      yield next(iterator)
+    except StopIteration:
+      pass
+
+
 def imagesDownload(title, savePath, images, chapter, seed):
   pathlib.Path(savePath).mkdir(parents=True, exist_ok=True)
   target = []
@@ -47,7 +62,7 @@ def imagesDownload(title, savePath, images, chapter, seed):
     # for tar in target:
     #     __downloadFromUrl(tar)
     for _ in tqdm.tqdm(pool.imap_unordered(__downloadFromUrl, target),
-                       total=len(target), ncols=68, desc="    Download", leave=False):
+                       total=len(target), ncols=68, desc="    Download", leave=False, timeout=60):
       pass
   finally:
     pool.close()
